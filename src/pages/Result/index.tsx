@@ -13,15 +13,15 @@ const ResultsScreen: React.FC = () => {
 
   const clubResults: ClubResult[] = [
     {
-      clube: 'Servos do Rei',
+      clube: 'Clube A',
       pontuacao: 80,
     },
     {
-      clube: 'Guardiões da Alvorada',
+      clube: 'Clube B',
       pontuacao: 60,
     },
     {
-      clube: 'Amigos do Paraiso',
+      clube: 'Clube c',
       pontuacao: 30,
     },
   ];
