@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { MehOutlined } from '@ant-design/icons';
 import type { RadioChangeEvent } from 'antd';
 import OptionsField from '../../components/OptionsField';
+import Navigation from '../../components/Navigation/navigation';
 
 const clubeOptions = [
   {
@@ -67,7 +68,6 @@ const commonOptions = [
 ];
 
 const initialOptionsProjetoSamuel = {
-  concurso: null,
   uniforme: null,
   tempo: null,
   conteudo: null,
@@ -95,6 +95,7 @@ const initialOptionsConcursoMusical = {
 
 function App() {
   const [valueClube, setValueClube] = useState('');
+  const [valueCompetition, setValueCompetition] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [optionsProjetoSamuel, setOptionsProjetoSamuel] = useState(initialOptionsProjetoSamuel);
   const [optionsConcursoMusical, setOptionsConcursoMusical] = useState(initialOptionsConcursoMusical);
@@ -109,6 +110,10 @@ function App() {
 
   const handleChangeClube = (value: { value: string; label: React.ReactNode }) => {
     setValueClube(value.value);
+  };
+
+  const handleChangeCompetition = ({ target: { value } }: RadioChangeEvent) => {
+    setValueCompetition(value);
   };
 
   const handleOptionProjetoSamuelChange = (
@@ -138,7 +143,7 @@ function App() {
     let requiredFields;
     let options;
 
-    if (optionsProjetoSamuel.concurso === 2) {
+    if (valueCompetition === 2) {
       options = optionsProjetoSamuel;
 
       requiredFields = [
@@ -171,16 +176,10 @@ function App() {
 
     if (valueClube && requiredFields.every((field) => field !== null)) {
       const body = {
-        concurso: 'PROJETO SAMUEL',
+        concurso: valueCompetition === 1 ? 'CONCURSO_MUSICAL' : 'PROJETO_SAMUEL',
         clube: valueClube,
         options,
-        total: Object.entries(options).reduce((acc, [key, value]) => {
-          if (key !== 'concurso') {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            return acc + value!;
-          }
-          return acc;
-        }, 0),
+        total: Object.values(options).reduce((acc, value) => acc + value!, 0),
       };
       console.log('body', body);
       setOptionsProjetoSamuel(initialOptionsProjetoSamuel);
@@ -191,9 +190,11 @@ function App() {
       console.log('Preencha todos os campos obrigatórios');
     }
   };
+  console.log('valueCompetition', valueCompetition);
 
   return (
     <div className="flex flex-col items-center  p-4">
+      <Navigation />
       {contextHolder}
       <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
         <h2 className="text-xl font-semibold mb-2">PROJETO SAMUEL</h2>
@@ -201,16 +202,16 @@ function App() {
       </div>
       <form onSubmit={(e) => onSubmit(e)} className="w-full flex flex-col items-center">
         <OptionsField
-          onChange={(value) => handleOptionProjetoSamuelChange('concurso', value)}
+          onChange={handleChangeCompetition}
           options={[
             { label: 'Projeto Samuel', value: 2 },
             { label: 'Concurso Musical', value: 1 },
           ]}
           title="Escolha o Concurso:"
-          value={optionsProjetoSamuel.concurso}
+          value={valueCompetition}
           submitted={submitted}
         />
-        {optionsProjetoSamuel.concurso !== null ? (
+        {valueCompetition !== null ? (
           <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
             <h3 className="text-xl font-semibold mb-2">Selecione o clube: </h3>
             <Select
@@ -223,7 +224,7 @@ function App() {
           </div>
         ) : null}
 
-        {valueClube === '' ? null : optionsProjetoSamuel.concurso === 2 ? (
+        {valueClube === '' ? null : valueCompetition === 2 ? (
           <>
             <OptionsField
               onChange={(value) => handleOptionProjetoSamuelChange('uniforme', value)}
