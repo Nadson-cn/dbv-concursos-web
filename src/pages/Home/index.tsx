@@ -54,6 +54,7 @@ function App() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const name = searchParams.get('jurado');
+  const nameLocalStorage = window.localStorage.getItem('name');
 
   const [valueClube, setValueClube] = useState('');
   const [tempoUtilizado, setTempoUtilizado] = useState('');
@@ -137,6 +138,7 @@ function App() {
         optionsProjetoSamuel.gestos,
         optionsProjetoSamuel.criatividade,
         optionsProjetoSamuel.ilustracoes,
+        tempoUtilizado,
       ];
     } else {
       options = optionsConcursoMusical;
@@ -151,14 +153,15 @@ function App() {
         optionsConcursoMusical.membros,
         optionsConcursoMusical.musica,
         optionsConcursoMusical.organizacao,
+        tempoUtilizado,
       ];
     }
 
-    if (valueClube && requiredFields.every((field) => field !== null)) {
+    if (valueClube && requiredFields.every((field) => field !== null) && tempoUtilizado !== '') {
       const body = {
         competition: valueCompetition === 1 ? 'CONCURSO MUSICAL' : 'PROJETO SAMUEL',
         club: valueClube,
-        name,
+        name: name || nameLocalStorage,
         time: tempoUtilizado,
         options,
         total: Object.keys(options).reduce((acc, key) => {
@@ -170,7 +173,6 @@ function App() {
         }, 0),
       };
       console.log('body', body);
-      // return;
       await API.axios
         .post('scores', body)
         .then((response: AxiosResponse) => {
@@ -189,13 +191,22 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col items-center  p-4">
+    <div className="flex flex-col items-center bg-[#f0ebf8] p-4">
       <Navigation />
       {contextHolder}
-      <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
+      <div className="mt-5 bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
         <h2 className="text-xl font-semibold mb-2">PROJETO SAMUEL</h2>
         <p>APaC - Região 09</p>
       </div>
+      <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
+        <p className="text-base font-normal mb-2">
+          <ul>
+            <li>Execente (10 pontos) | Ótimo (8 pontos)</li>
+            <li>Bom (6 pontos) | Regular (4 pontos)</li>
+          </ul>
+        </p>
+      </div>
+
       <form onSubmit={(e) => onSubmit(e)} className="w-full flex flex-col items-center">
         <OptionsField
           onChange={handleChangeCompetition}
@@ -222,6 +233,11 @@ function App() {
 
         {valueClube === '' ? null : valueCompetition === 2 ? (
           <>
+            <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
+              <h3 className="text-xl font-semibold mb-2">
+                Tema do Projeto Samuel 2023: <p className="italic">O Grande Conflito</p>
+              </h3>
+            </div>
             <OptionsField
               onChange={(value) => handleOptionProjetoSamuelChange('uniforme', value)}
               options={commonOptions}

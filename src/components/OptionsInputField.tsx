@@ -12,7 +12,7 @@ const OptionsInputField: React.FC<OptionsFieldProps> = ({ title, value, submitte
   return (
     <div
       className={`bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2 border-2 ${
-        submitted && value === null ? 'border-red-500' : ''
+        submitted && value === '' ? 'border-red-500' : ''
       }`}
     >
       <h3 className="text-xl font-semibold mb-2">{title}</h3>

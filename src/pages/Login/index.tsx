@@ -27,6 +27,7 @@ const Login: React.FC = () => {
       name,
       password,
     };
+    window.localStorage.setItem('name', body.name);
 
     // Lógica de autenticação
     if (body.password === 'regiao9') {
@@ -46,7 +47,7 @@ const Login: React.FC = () => {
       <img src={logoProjeto} className="w-[300px]" alt="" />
       <div className="flex flex-col w-4/5 mt-4">
         <div className="flex flex-col w-3/5">
-          <div className="flex items-center">
+          <div className="flex items-center xl:w-4/5 ">
             <div className="mr-5">
               <h1 className="font-semibold">Nome do jurado:</h1>
               <Select
@@ -80,7 +81,7 @@ const Login: React.FC = () => {
           <h1 className="font-semibold">Senha:</h1>
           <Space className="w-full" direction="vertical">
             <Input.Password
-              className="w-full h-12"
+              className="w-full h-12 xl:w-1/2"
               placeholder="Senha"
               onChange={(e) => setPassword(e.target.value)}
               iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}

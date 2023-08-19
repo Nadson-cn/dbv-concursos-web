@@ -2,7 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
 .bg-custom-background {
   @apply bg-cover bg-no-repeat min-h-screen;
   background-image: url('./assets/background.png');
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
 }

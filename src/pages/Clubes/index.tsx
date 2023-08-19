@@ -35,21 +35,22 @@ const Clubes: React.FC = () => {
             <List
               className="xl:ml-28 bg-slate-100 rounded"
               itemLayout="horizontal"
-              dataSource={data}
+              dataSource={data.reverse()}
               renderItem={(item, index) => (
                 <List.Item>
                   <List.Item.Meta className="ml-5 text-xl font-semibold" title={'#' + index + ' - ' + item.title} />
-                  {/* //{' '}
-                  <a href={`https://dbv-concursos.vercel.app/result?clube=${item.title}`}>
-                    // {'#' + index + ' - ' + item.title}
-                    //{' '}
-                  </a> */}
                   <Link className="mr-10" to={`/result?clube=${item.title}`}>
                     Resultado
                   </Link>
                 </List.Item>
               )}
             />
+            <button
+              className="bg-slate-800 hover:bg-slate-700 mr-5 p-4 rounded text-xl text-white w-full xl:hidden mt-5"
+              type="submit"
+            >
+              <Link to="/home">Voltar</Link>
+            </button>
           </div>
         </div>
       </div>
