@@ -44,7 +44,7 @@ const Clubes: React.FC = () => {
                     // {'#' + index + ' - ' + item.title}
                     //{' '}
                   </a> */}
-                  <Link className="mr-10" to={`/result?clubes=${item.title}`}>
+                  <Link className="mr-10" to={`/result?clube=${item.title}`}>
                     Resultado
                   </Link>
                 </List.Item>
