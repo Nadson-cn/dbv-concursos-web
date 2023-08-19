@@ -19,7 +19,7 @@ const ResultsScreen: React.FC = () => {
   useEffect(() => {
     setLoading(true);
     api.axios
-      .get(`/scores/calcule/${clube}`)
+      .get(`scores/calcule/${clube}`)
       .then((response: AxiosResponse) => {
         setPontuacaoSamuel(response.data.pontuacaoMusica);
         setPontuacaoMusical(response.data.pontuacaoSamuel);

@@ -17,7 +17,7 @@ const RankingView: React.FC = () => {
 
   useEffect(() => {
     api.axios
-      .get(`/scores/ranking/${competicao}`)
+      .get(`scores/ranking/${competicao}`)
       .then((response: AxiosResponse) => {
         console.log(response.data);
         setRanking(response.data);

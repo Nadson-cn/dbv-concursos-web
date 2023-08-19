@@ -30,7 +30,7 @@ function Ranking() {
 
   useEffect(() => {
     api.axios
-      .get(`/scores/ranking/${valueCompetition}`)
+      .get(`scores/ranking/${valueCompetition}`)
       .then((response: AxiosResponse) => {
         console.log(response.data);
         setResult(response.data);
