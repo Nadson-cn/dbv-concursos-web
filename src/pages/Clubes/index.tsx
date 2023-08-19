@@ -41,7 +41,7 @@ const Clubes: React.FC = () => {
                   <List.Item.Meta
                     className="ml-5 text-xl font-semibold"
                     title={
-                      <a href={`${process.env.VITE_APP_URL}result?clube=${item.title}`}>
+                      <a href={`https://dbv-concursos.vercel.app/result?clube=${item.title}`}>
                         {'#' + index + ' - ' + item.title}
                       </a>
                     }
