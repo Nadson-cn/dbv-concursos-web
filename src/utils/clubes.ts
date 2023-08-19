@@ -1,0 +1,17 @@
+export const allClubes = [
+  'Águia Real',
+  'Albatroz',
+  'Amigos do Paraiso',
+  'Condor',
+  'Exército Real',
+  'Falcão',
+  'Guardiões da Alvorada',
+  'Guerreiros da Fé',
+  'Leões dos Pinheiros',
+  'Luz do Universo',
+  'Semeadores',
+  'Servos do Rei',
+  'Sirius',
+  'Valentes de Paulínia',
+  'Vitória Régia',
+];

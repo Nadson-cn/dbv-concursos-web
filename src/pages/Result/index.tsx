@@ -1,79 +1,111 @@
 import React, { useState, useEffect } from 'react';
-
-interface ClubResult {
-  clube: string;
-  pontuacao: number;
-}
+import { AxiosError, AxiosResponse } from 'axios';
+import { Api } from '../../configs/api';
+import { Link, useLocation } from 'react-router-dom';
+import logoMda from '../../assets/Logo-mda-apac.png';
+import logoRegiao from '../../assets/Logo-regiao-9.png';
+import logoProjeto from '../../assets/Logo-projeto-samuel-2023.png';
 
 const ResultsScreen: React.FC = () => {
-  const [counting, setCounting] = useState(false);
-  const [position, setPosition] = useState(3); // Começa com 3 para terceiro lugar
-  const [resultIndex, setResultIndex] = useState(0); // Índice do resultado exibido
-  const [winnerRevealed, setWinnerRevealed] = useState(false); // Novo estado para controlar se o vencedor foi revelado
+  const api = new Api();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const clube = searchParams.get('clube');
 
-  const clubResults: ClubResult[] = [
-    {
-      clube: 'Clube A',
-      pontuacao: 80,
-    },
-    {
-      clube: 'Clube B',
-      pontuacao: 60,
-    },
-    {
-      clube: 'Clube c',
-      pontuacao: 30,
-    },
-  ];
-
-  const startCounting = () => {
-    setCounting(true);
-  };
+  const [pontuacaoSamuel, setPontuacaoSamuel] = useState(0);
+  const [pontuacaoMusical, setPontuacaoMusical] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (counting) {
-      if (position > 0) {
-        const interval = setInterval(() => {
-          setPosition((prevPosition) => prevPosition - 1);
-        }, 1000);
-
-        return () => clearInterval(interval);
-      } else if (!winnerRevealed) {
-        setResultIndex(resultIndex + 1);
-        setPosition(3);
-      } else {
-        const timeout = setTimeout(() => {
-          setWinnerRevealed(false);
-        }, 3000);
-
-        return () => clearTimeout(timeout);
-      }
-    }
-  }, [counting, position, winnerRevealed, resultIndex]);
+    setLoading(true);
+    api.axios
+      .get(`/scores/calcule/${clube}`)
+      .then((response: AxiosResponse) => {
+        setPontuacaoSamuel(response.data.pontuacaoMusica);
+        setPontuacaoMusical(response.data.pontuacaoSamuel);
+        console.log(response.data);
+        setLoading(false);
+      })
+      .catch((error: AxiosError) => {
+        console.error('Erro na requisição:', error);
+        setLoading(false);
+      });
+  }, []);
 
   return (
-    <div>
-      <div className="flex flex-row items-center justify-center gap-3 mt-20">
-        <div className="items-center flex flex-col">
-          <h1 className="text-4xl mb-4 font-bold">2º Lugar</h1>
-          <div className="w-[600px] h-[600px] bg-[#3a4246] border-[10px] border-gray-600 text-[white] text-5xl flex justify-center items-center rounded-[50%]">
-            <p className="text-center font-bold">{clubResults[2].clube}</p>
+    <>
+      <div className="absolute m-5">
+        <button
+          className="bg-slate-600 hover:bg-slate-700 p-4 rounded text-xl text-white w-full xl:w-24 "
+          type="submit"
+        >
+          <Link to="/clubes">Voltar</Link>
+        </button>
+      </div>
+      <div className="bg-custom-background bg-fixed flex flex-col items-center justify-center">
+        <div className="flex">
+          <img src={logoMda} alt="" className="w-[200px] h-[200px] mr-20" />
+          <div className="flex flex-col items-center">
+            <h1 className="font-extrabold text-8xl">PONTUAÇÃO</h1>
+            <h1 className="font-medium text-6xl mt-4">{clube}</h1>
           </div>
+          <img src={logoRegiao} alt="" className="w-[200px] h-[200px] mr-20" />
         </div>
-        <div className="items-center flex flex-col">
-          <h1 className="text-4xl mb-4 -[10px]">1º Lugar</h1>
-          <div className="w-[600px] h-[600px] bg-[#fbd827] border-[10px] border-yellow-600 mb-52 text-[white] text-5xl flex justify-center items-center rounded-[50%]">
-            <p className="text-center font-bold text-black">{clubResults[0].clube}</p>
+        <div className="flex mt-3 justify-center items-center">
+          <div className="flex">
+            <div className="flex flex-col items-center">
+              <h2 className="font-extrabold text-7xl">PROJETO SAMUEL</h2>
+              {loading ? (
+                <svg
+                  aria-hidden="true"
+                  className="inline w-32 h-32 mr-2 mt-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-200"
+                  viewBox="0 0 100 101"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                    fill="currentFill"
+                  />
+                </svg>
+              ) : (
+                <h1 className="font-extrabold text-9xl tracking-widest">{pontuacaoSamuel}</h1>
+              )}
+            </div>
           </div>
-        </div>
-        <div className="items-center flex flex-col">
-          <h1 className="text-4xl mb-4 font-bold">3º Lugar</h1>
-          <div className="w-[600px] h-[600px] bg-[#3498db] border-4 border-b-orange-950 text-[white] text-5xl flex justify-center items-center rounded-[50%]">
-            <p className="text-center font-bold">{clubResults[1].clube}</p>
+          <img src={logoProjeto} alt="" className="w-[450px] h-[450px] ml-5 mr-5" />
+          <div className="flex">
+            <div className="flex flex-col items-center gap-5">
+              <h2 className="font-extrabold text-7xl">CONCURSO MUSICAL</h2>
+              {loading ? (
+                <svg
+                  aria-hidden="true"
+                  className="inline w-32 h-32 mr-2 mt-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-200"
+                  viewBox="0 0 100 101"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                    fill="currentFill"
+                  />
+                </svg>
+              ) : (
+                <h1 className="font-extrabold text-9xl tracking-widest">{pontuacaoMusical}</h1>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

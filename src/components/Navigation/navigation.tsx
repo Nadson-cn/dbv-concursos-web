@@ -4,15 +4,22 @@ import { Link } from 'react-router-dom';
 const Navigation: React.FC = () => {
   return (
     <nav>
-      <ul>
+      <ul className="flex gap-3 text-blue-600">
         <li>
-          <Link to="/">Home</Link>
+          <button
+            className="bg-blue-600 hover:bg-blue-700 p-4 rounded text-base text-white w-full xl:w-18"
+            type="submit"
+          >
+            <Link to="/ranking">Ranking</Link>
+          </button>
         </li>
         <li>
-          <Link to="/ranking">Ranking</Link>
-        </li>
-        <li>
-          <Link to="/result">Results</Link>
+          <button
+            className="bg-blue-600 hover:bg-blue-700 p-4 rounded text-base text-white w-full xl:w-18 "
+            type="submit"
+          >
+            <Link to="/clubes">Clubes</Link>
+          </button>
         </li>
       </ul>
     </nav>

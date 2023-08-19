@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background: rgb(246, 232, 231);
+.bg-custom-background {
+  @apply bg-cover bg-no-repeat min-h-screen;
+  background-image: url('./assets/background.png');
 }
