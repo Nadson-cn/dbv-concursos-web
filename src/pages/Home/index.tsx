@@ -201,7 +201,7 @@ function App() {
       <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
         <p className="text-base font-normal mb-2">
           <ul>
-            <li>Execente (10 pontos) | Ótimo (8 pontos)</li>
+            <li>Excelente (10 pontos) | Ótimo (8 pontos)</li>
             <li>Bom (6 pontos) | Regular (4 pontos)</li>
           </ul>
         </p>
