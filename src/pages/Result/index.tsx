@@ -30,7 +30,7 @@ const ResultsScreen: React.FC = () => {
         console.error('Erro na requisição:', error);
         setLoading(false);
       });
-  }, []);
+  }, [clube]);
 
   return (
     <>
