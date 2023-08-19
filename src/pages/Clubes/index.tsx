@@ -38,14 +38,15 @@ const Clubes: React.FC = () => {
               dataSource={data}
               renderItem={(item, index) => (
                 <List.Item>
-                  <List.Item.Meta
-                    className="ml-5 text-xl font-semibold"
-                    title={
-                      <a href={`https://dbv-concursos.vercel.app/result?clube=${item.title}`}>
-                        {'#' + index + ' - ' + item.title}
-                      </a>
-                    }
-                  />
+                  <List.Item.Meta className="ml-5 text-xl font-semibold" title={'#' + index + ' - ' + item.title} />
+                  {/* //{' '}
+                  <a href={`https://dbv-concursos.vercel.app/result?clube=${item.title}`}>
+                    // {'#' + index + ' - ' + item.title}
+                    //{' '}
+                  </a> */}
+                  <Link className="mr-10" to={`/result?clubes=${item.title}`}>
+                    Resultado
+                  </Link>
                 </List.Item>
               )}
             />
