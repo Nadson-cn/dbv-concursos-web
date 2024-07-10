@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Radio, RadioChangeEvent, Table } from 'antd';
 import { Api } from '../../configs/api';
 import { AxiosError, AxiosResponse } from 'axios';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const { Column } = Table;
 
@@ -21,6 +21,7 @@ interface ResultType {
 
 function Ranking() {
   const api = new Api();
+  const navigate = useNavigate();
   const [valueCompetition, setValueCompetition] = useState('samuel');
   const [result, setResult] = useState<any>();
 
@@ -54,9 +55,10 @@ function Ranking() {
       <div className="absolute m-5">
         <button
           className="bg-slate-600 hover:bg-slate-700 p-4 rounded text-xl text-white w-full xl:w-24 "
-          type="submit"
+          type="button"
+          onClick={() => navigate('/home')}
         >
-          <Link to="/home">Voltar</Link>
+          Voltar
         </button>
       </div>
       <div className="flex flex-col items-center">

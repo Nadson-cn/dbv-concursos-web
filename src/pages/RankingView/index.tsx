@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AxiosError, AxiosResponse } from 'axios';
 import { Api } from '../../configs/api';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import logoMda from '../../assets/Logo-mda-apac.png';
 import logoRegiao from '../../assets/Logo-regiao-9.png';
 import trofeu1 from '../../assets/Trofeu-1-lugar.png';
@@ -10,6 +10,7 @@ import trofeu3 from '../../assets/Trofeu-3-lugar.png';
 
 const RankingView: React.FC = () => {
   const api = new Api();
+  const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const competicao = searchParams.get('competicao');
@@ -32,9 +33,10 @@ const RankingView: React.FC = () => {
       <div className="absolute m-5">
         <button
           className="bg-slate-600 hover:bg-slate-700 p-4 rounded text-xl text-white w-full xl:w-24 "
-          type="submit"
+          type="button"
+          onClick={() => navigate('/clubes')}
         >
-          <Link to="/clubes">Voltar</Link>
+          Voltar
         </button>
       </div>
       <div className="bg-custom-background bg-fixed flex flex-col items-center">
