@@ -1,14 +1,15 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Select, notification } from 'antd';
 import { useState } from 'react';
 import { MehOutlined, SmileOutlined } from '@ant-design/icons';
 import type { RadioChangeEvent } from 'antd';
 import OptionsField from '../../components/OptionsField';
 import Navigation from '../../components/Navigation/navigation';
-import { Api } from '../../configs/api';
-import { AxiosError, AxiosResponse } from 'axios';
 import { allClubes } from '../../utils/clubes';
 import OptionsInputField from '../../components/OptionsInputField';
 import { useLocation } from 'react-router-dom';
+import { addDoc, collection } from 'firebase/firestore';
+import { firestore } from '../../configs/firebase';
 
 const clubeOptions = allClubes.map((clube) => ({
   value: clube,
@@ -49,8 +50,6 @@ const initialOptionsConcursoMusical = {
 };
 
 function App() {
-  const API = new Api();
-
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const name = searchParams.get('jurado');
@@ -166,21 +165,20 @@ function App() {
         options,
         total: Object.keys(options).reduce((acc, key) => {
           if (key !== 'tempoUtilizado') {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             return acc + options![key]!;
           }
           return acc;
         }, 0),
       };
       console.log('body', body);
-      await API.axios
-        .post('scores', body)
-        .then((response: AxiosResponse) => {
-          console.log(response.data);
+
+      await addDoc(collection(firestore, 'scores'), body)
+        .then((response: any) => {
+          console.log(response);
           handleReset();
           successNotification();
         })
-        .catch((error: AxiosError) => {
+        .catch((error: any) => {
           console.error('Erro na requisição:', error);
         });
     } else {

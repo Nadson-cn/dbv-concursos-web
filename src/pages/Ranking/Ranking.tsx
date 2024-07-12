@@ -1,17 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Radio, RadioChangeEvent, Table } from 'antd';
-import { Api } from '../../configs/api';
-import { AxiosError, AxiosResponse } from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { firestore } from '../../configs/firebase';
 
 const { Column } = Table;
 
-interface DataType {
-  key: React.Key | string;
-  clube: string;
-  pontuacao: number;
-  time: string;
-}
 interface ResultType {
   competition: string;
   club: string;
@@ -20,35 +14,41 @@ interface ResultType {
 }
 
 function Ranking() {
-  const api = new Api();
   const navigate = useNavigate();
-  const [valueCompetition, setValueCompetition] = useState('samuel');
+  const [valueCompetition, setValueCompetition] = useState('PROJETO SAMUEL');
   const [result, setResult] = useState<any>();
 
   const handleChangeCompetition = ({ target: { value } }: RadioChangeEvent) => {
     setValueCompetition(value);
   };
 
+  const fetchData = async () => {
+    const q = query(collection(firestore, 'scores'), where('competition', '==', valueCompetition));
+    const querySnapshot = await getDocs(q);
+    const dadosFirestore: any[] = [];
+    querySnapshot.forEach((doc) => {
+      dadosFirestore.push({ id: doc.id, ...doc.data() });
+    });
+
+    setResult(dadosFirestore);
+    console.log('querySnapshot', querySnapshot);
+    console.log('dadosFirestore', dadosFirestore);
+  };
+
   useEffect(() => {
-    api.axios
-      .get(`scores/ranking/${valueCompetition}`)
-      .then((response: AxiosResponse) => {
-        console.log(response.data);
-        setResult(response.data);
-      })
-      .catch((error: AxiosError) => {
-        console.error('Erro na requisição:', error);
-      });
+    fetchData();
   }, [valueCompetition]);
 
   const data =
     result &&
-    result.map((item: ResultType, index: number) => ({
-      key: (index + 1).toString(),
-      clube: item.club,
-      pontuacao: item.total,
-      time: item.time,
-    }));
+    result
+      .sort((a: any, b: any) => b.total - a.total)
+      .map((item: ResultType, index: number) => ({
+        key: (index + 1).toString(),
+        clube: item.club,
+        pontuacao: item.total,
+        time: item.time,
+      }));
 
   return (
     <>
@@ -66,8 +66,8 @@ function Ranking() {
           <h3 className="text-xl font-semibold mb-2">Selecione o concurso</h3>
           <Radio.Group
             options={[
-              { label: 'Projeto Samuel', value: 'samuel' },
-              { label: 'Concurso Musical', value: 'musical' },
+              { label: 'Projeto Samuel', value: 'PROJETO SAMUEL' },
+              { label: 'Concurso Musical', value: 'CONCURSO MUSICAL' },
             ]}
             onChange={handleChangeCompetition}
             value={valueCompetition}

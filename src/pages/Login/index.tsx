@@ -52,7 +52,6 @@ const Login: React.FC = () => {
               <h1 className="font-semibold">Nome do jurado:</h1>
               <Select
                 defaultValue=""
-                // style={{ width: 120 }}
                 className="w-full mb-4"
                 onChange={handleChange}
                 size="large"
