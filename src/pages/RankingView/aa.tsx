@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { firestore } from '../../configs/firebase';
+// import useWindowSize from 'react-use/lib/useWindowSize';
+import Confetti from 'react-confetti';
+
 import logoMda from '../../assets/Logo-mda-apac.png';
 import logoRegiao from '../../assets/Logo-regiao-9.png';
 import trofeu1 from '../../assets/Trofeu-1-lugar.png';
@@ -18,13 +21,11 @@ const TrophyDisplay = ({ place, trophy, data, show }: any) => (
   <div className="flex flex-col items-center mt-5">
     <img src={trophy} alt={`${place} Trophy`} className="w-[150px] h-[150px] ml-5 mr-5" />
     <h2 className="font-extrabold text-7xl">{place}</h2>
-    {data ? (
-      show && (
-        <>
-          <h1 className="font-extrabold text-9xl tracking-widest">{data.total}</h1>
-          <h1 className="font-bold text-5xl">{data.club}</h1>
-        </>
-      )
+    {show && data ? (
+      <>
+        <h1 className="font-extrabold text-9xl tracking-widest">{data.total}</h1>
+        <h1 className="font-bold text-5xl">{data.club}</h1>
+      </>
     ) : (
       <svg
         aria-hidden="true"
@@ -113,14 +114,28 @@ const RankingView: React.FC = () => {
     return finalRanking;
   };
 
+  const handleDisplay = () => {
+    if (showThird) {
+      setShowSecond(true);
+      if (showSecond) {
+        console.log('aaa');
+        setShowFirst(true);
+      }
+    } else {
+      console.log('bb');
+      setShowThird(true);
+    }
+  };
+
   return (
     <>
-      <div className="absolute m-5">
-        <Button className="text-slate-700 w-full xl:w-24 mr-5" onClick={() => navigate('/clubes')}>
+      {showFirst && <Confetti numberOfPieces={400} />}
+      <div className="absolute flex flex-col m-5">
+        <Button className="text-slate-700 w-full xl:w-24 mb-3" onClick={() => navigate('/clubes')}>
           Voltar
         </Button>
         <Button
-          className="text-slate-700 w-full xl:w-24 mr-5"
+          className="text-slate-700 w-full xl:w-24 mb-3"
           onClick={() => {
             setShowThird(false);
             setShowSecond(false);
@@ -129,8 +144,8 @@ const RankingView: React.FC = () => {
         >
           Reset
         </Button>
-        <Button className="bg-slate-600 text-white w-full xl:w-28" onClick={() => setShowThird(true)}>
-          Exibir 3
+        <Button className="bg-slate-600 text-white w-full xl:w-28 mb-3" onClick={handleDisplay}>
+          Exibir
         </Button>
       </div>
       <div className="bg-custom-background bg-fixed flex flex-col items-center">
@@ -146,8 +161,8 @@ const RankingView: React.FC = () => {
         </div>
         <div className="flex justify-center items-center mt-20">
           <div className="flex gap-32">
-            <TrophyDisplay place="2º Lugar" trophy={trofeu2} data={ranking[1]} show={showFirst} />
-            <TrophyDisplay place="1º Lugar" trophy={trofeu1} data={ranking[0]} show={showSecond} />
+            <TrophyDisplay place="2º Lugar" trophy={trofeu2} data={ranking[1]} show={showSecond} />
+            <TrophyDisplay place="1º Lugar" trophy={trofeu1} data={ranking[0]} show={showFirst} />
             <TrophyDisplay place="3º Lugar" trophy={trofeu3} data={ranking[2]} show={showThird} />
           </div>
         </div>

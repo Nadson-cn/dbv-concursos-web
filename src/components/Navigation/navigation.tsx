@@ -12,7 +12,7 @@ const Navigation: React.FC = () => {
             type="button"
             onClick={() => navigate('/ranking')}
           >
-            Ranking
+            Clubes
           </button>
         </li>
         <li>
@@ -21,7 +21,7 @@ const Navigation: React.FC = () => {
             type="button"
             onClick={() => navigate('/clubes')}
           >
-            Clubes
+            Ranking
           </button>
         </li>
       </ul>

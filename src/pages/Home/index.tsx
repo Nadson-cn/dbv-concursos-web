@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Select, notification } from 'antd';
+import { Select, Spin, notification } from 'antd';
 import { useState } from 'react';
 import { MehOutlined, SmileOutlined } from '@ant-design/icons';
 import type { RadioChangeEvent } from 'antd';
@@ -10,6 +10,7 @@ import OptionsInputField from '../../components/OptionsInputField';
 import { useLocation } from 'react-router-dom';
 import { addDoc, collection } from 'firebase/firestore';
 import { firestore } from '../../configs/firebase';
+import AnimationSuccess from '../../assets/AnimationSuccess.gif';
 
 const clubeOptions = allClubes.map((clube) => ({
   value: clube,
@@ -63,13 +64,7 @@ function App() {
   const [optionsProjetoSamuel, setOptionsProjetoSamuel] = useState(initialOptionsProjetoSamuel);
   const [optionsConcursoMusical, setOptionsConcursoMusical] = useState(initialOptionsConcursoMusical);
   const [api, contextHolder] = notification.useNotification();
-
-  const successNotification = () => {
-    api.open({
-      message: 'Pontuação salva.',
-      icon: <SmileOutlined style={{ color: '#14e910' }} />,
-    });
-  };
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const errorNotification = () => {
     api.open({
@@ -115,10 +110,13 @@ function App() {
     }));
   };
 
+  const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     setSubmitted(true);
     setLoading(true);
+    setShowSuccess(false);
 
     let requiredFields;
     let options;
@@ -172,15 +170,13 @@ function App() {
       };
       console.log('body', body);
 
-      await addDoc(collection(firestore, 'scores'), body)
-        .then((response: any) => {
-          console.log(response);
-          handleReset();
-          successNotification();
-        })
-        .catch((error: any) => {
-          console.error('Erro na requisição:', error);
-        });
+      await addDoc(collection(firestore, 'scores'), body);
+
+      setLoading(false);
+      setShowSuccess(true);
+      handleReset();
+      await delay(1600);
+      setShowSuccess(false);
     } else {
       errorNotification();
       console.log('Preencha todos os campos obrigatórios');
@@ -190,6 +186,57 @@ function App() {
 
   return (
     <div className="flex flex-col items-center bg-[#f0ebf8] p-4">
+      {loading && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+          }}
+        >
+          <Spin size="large" />
+        </div>
+      )}
+
+      {showSuccess && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+          }}
+        >
+          <div
+            className="bg-white p-5 rounded-lg flex flex-col items-center"
+            // style={{
+            //   backgroundColor: 'white',
+            //   padding: '20px',
+            //   justifyContent: 'center',
+            //   alignItems: 'center',
+            //   borderRadius: '10px',
+            //   boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
+            // }}
+          >
+            <img src={AnimationSuccess} width={90} height={90} alt="Sucesso." />
+            <h2 className="text-xl font-bold">Sucesso!</h2>
+            <p>Pontuação salva.</p>
+          </div>
+        </div>
+      )}
       <Navigation />
       {contextHolder}
       <div className="mt-5 bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
@@ -426,6 +473,7 @@ function App() {
               value={tempoUtilizado}
               onChange={(e) => setTempoUtilizado(e.target.value)}
             />
+
             <button
               className="bg-blue-600 hover:bg-blue-700 p-4 rounded text-xl text-white w-full xl:w-1/2"
               type="submit"

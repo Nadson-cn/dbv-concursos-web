@@ -3,7 +3,7 @@ import { Radio, RadioChangeEvent, Table } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { firestore } from '../../configs/firebase';
-
+import ArrowBack from '../../assets/arrow-back.svg';
 const { Column } = Table;
 
 interface ResultType {
@@ -52,18 +52,13 @@ function Ranking() {
 
   return (
     <>
-      <div className="absolute m-5">
-        <button
-          className="bg-slate-600 hover:bg-slate-700 p-4 rounded text-xl text-white w-full xl:w-24 "
-          type="button"
-          onClick={() => navigate('/home')}
-        >
-          Voltar
-        </button>
-      </div>
       <div className="flex flex-col items-center">
         <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/5 border-2 flex flex-col items-center">
-          <h3 className="text-xl font-semibold mb-2">Selecione o concurso</h3>
+          <div className="flex justify-between items-center w-full mb-3">
+            <img onClick={() => navigate('/home')} src={ArrowBack} width={30} height={30} alt="" />
+            <h3 className="text-xl font-semibold">Selecione o concurso</h3>
+            <span></span>
+          </div>
           <Radio.Group
             options={[
               { label: 'Projeto Samuel', value: 'PROJETO SAMUEL' },
