@@ -1,14 +1,16 @@
-import { Select, notification } from 'antd';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { Select, Spin, notification } from 'antd';
 import { useState } from 'react';
 import { MehOutlined, SmileOutlined } from '@ant-design/icons';
 import type { RadioChangeEvent } from 'antd';
 import OptionsField from '../../components/OptionsField';
 import Navigation from '../../components/Navigation/navigation';
-import { Api } from '../../configs/api';
-import { AxiosError, AxiosResponse } from 'axios';
 import { allClubes } from '../../utils/clubes';
 import OptionsInputField from '../../components/OptionsInputField';
 import { useLocation } from 'react-router-dom';
+import { addDoc, collection } from 'firebase/firestore';
+import { firestore } from '../../configs/firebase';
+import AnimationSuccess from '../../assets/AnimationSuccess.gif';
 
 const clubeOptions = allClubes.map((clube) => ({
   value: clube,
@@ -49,8 +51,6 @@ const initialOptionsConcursoMusical = {
 };
 
 function App() {
-  const API = new Api();
-
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const name = searchParams.get('jurado');
@@ -64,13 +64,7 @@ function App() {
   const [optionsProjetoSamuel, setOptionsProjetoSamuel] = useState(initialOptionsProjetoSamuel);
   const [optionsConcursoMusical, setOptionsConcursoMusical] = useState(initialOptionsConcursoMusical);
   const [api, contextHolder] = notification.useNotification();
-
-  const successNotification = () => {
-    api.open({
-      message: 'Pontuação salva.',
-      icon: <SmileOutlined style={{ color: '#14e910' }} />,
-    });
-  };
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const errorNotification = () => {
     api.open({
@@ -116,10 +110,13 @@ function App() {
     }));
   };
 
+  const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     setSubmitted(true);
     setLoading(true);
+    setShowSuccess(false);
 
     let requiredFields;
     let options;
@@ -166,23 +163,20 @@ function App() {
         options,
         total: Object.keys(options).reduce((acc, key) => {
           if (key !== 'tempoUtilizado') {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             return acc + options![key]!;
           }
           return acc;
         }, 0),
       };
       console.log('body', body);
-      await API.axios
-        .post('scores', body)
-        .then((response: AxiosResponse) => {
-          console.log(response.data);
-          handleReset();
-          successNotification();
-        })
-        .catch((error: AxiosError) => {
-          console.error('Erro na requisição:', error);
-        });
+
+      await addDoc(collection(firestore, 'scores'), body);
+
+      setLoading(false);
+      setShowSuccess(true);
+      handleReset();
+      await delay(1600);
+      setShowSuccess(false);
     } else {
       errorNotification();
       console.log('Preencha todos os campos obrigatórios');
@@ -192,6 +186,47 @@ function App() {
 
   return (
     <div className="flex flex-col items-center bg-[#f0ebf8] p-4">
+      {loading && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+          }}
+        >
+          <Spin size="large" />
+        </div>
+      )}
+
+      {showSuccess && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+          }}
+        >
+          <div className="bg-white p-5 rounded-lg flex flex-col items-center">
+            <img src={AnimationSuccess} width={90} height={90} alt="Sucesso." />
+            <h2 className="text-xl font-bold">Sucesso!</h2>
+            <p>Pontuação salva.</p>
+          </div>
+        </div>
+      )}
       <Navigation />
       {contextHolder}
       <div className="mt-5 bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
@@ -235,7 +270,7 @@ function App() {
           <>
             <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
               <h3 className="text-xl font-semibold mb-2">
-                Tema do Projeto Samuel 2023: <p className="italic">O Grande Conflito</p>
+                Tema do Projeto Samuel 2024: <p className="italic">Missão ao Extremo</p>
               </h3>
             </div>
             <OptionsField
@@ -428,6 +463,7 @@ function App() {
               value={tempoUtilizado}
               onChange={(e) => setTempoUtilizado(e.target.value)}
             />
+
             <button
               className="bg-blue-600 hover:bg-blue-700 p-4 rounded text-xl text-white w-full xl:w-1/2"
               type="submit"

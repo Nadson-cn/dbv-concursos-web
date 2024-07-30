@@ -1,17 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Radio, RadioChangeEvent, Table } from 'antd';
-import { Api } from '../../configs/api';
-import { AxiosError, AxiosResponse } from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { firestore } from '../../configs/firebase';
+import ArrowBack from '../../assets/arrow-back.svg';
 const { Column } = Table;
 
-interface DataType {
-  key: React.Key | string;
-  clube: string;
-  pontuacao: number;
-  time: string;
-}
 interface ResultType {
   competition: string;
   club: string;
@@ -20,54 +14,82 @@ interface ResultType {
 }
 
 function Ranking() {
-  const api = new Api();
   const navigate = useNavigate();
-  const [valueCompetition, setValueCompetition] = useState('samuel');
+  const [valueCompetition, setValueCompetition] = useState('PROJETO SAMUEL');
   const [result, setResult] = useState<any>();
 
   const handleChangeCompetition = ({ target: { value } }: RadioChangeEvent) => {
     setValueCompetition(value);
   };
 
+  const fetchData = async () => {
+    const q = query(collection(firestore, 'scores'), where('competition', '==', valueCompetition));
+    const querySnapshot = await getDocs(q);
+    const dadosFirestore: any[] = [];
+    querySnapshot.forEach((doc) => {
+      dadosFirestore.push({ id: doc.id, ...doc.data() });
+    });
+
+    const clubRanking: { [key: string]: any[] } = {};
+
+    dadosFirestore.forEach((score: any) => {
+      const { club, competition, total } = score;
+
+      if (!clubRanking[club]) {
+        clubRanking[club] = [];
+      }
+
+      const existingEntry = clubRanking[club].find((entry) => entry.competition === competition);
+
+      if (existingEntry) {
+        existingEntry.total += total;
+      } else {
+        clubRanking[club].push({
+          club,
+          competition,
+          total,
+        });
+      }
+    });
+
+    const finalRanking = Object.values(clubRanking).flat();
+
+    finalRanking.sort((a, b) => b.total - a.total);
+
+    setResult(finalRanking);
+    // setResult(dadosFirestore);
+    console.log('querySnapshot', querySnapshot);
+    console.log('dadosFirestore', dadosFirestore);
+  };
+
   useEffect(() => {
-    api.axios
-      .get(`scores/ranking/${valueCompetition}`)
-      .then((response: AxiosResponse) => {
-        console.log(response.data);
-        setResult(response.data);
-      })
-      .catch((error: AxiosError) => {
-        console.error('Erro na requisição:', error);
-      });
+    fetchData();
   }, [valueCompetition]);
 
   const data =
     result &&
-    result.map((item: ResultType, index: number) => ({
-      key: (index + 1).toString(),
-      clube: item.club,
-      pontuacao: item.total,
-      time: item.time,
-    }));
+    result
+      .sort((a: any, b: any) => b.total - a.total)
+      .map((item: ResultType, index: number) => ({
+        key: (index + 1).toString(),
+        clube: item.club,
+        pontuacao: item.total,
+        time: item.time,
+      }));
 
   return (
     <>
-      <div className="absolute m-5">
-        <button
-          className="bg-slate-600 hover:bg-slate-700 p-4 rounded text-xl text-white w-full xl:w-24 "
-          type="button"
-          onClick={() => navigate('/home')}
-        >
-          Voltar
-        </button>
-      </div>
       <div className="flex flex-col items-center">
         <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/5 border-2 flex flex-col items-center">
-          <h3 className="text-xl font-semibold mb-2">Selecione o concurso</h3>
+          <div className="flex justify-between items-center w-full mb-3">
+            <img onClick={() => navigate('/home')} src={ArrowBack} width={30} height={30} alt="" />
+            <h3 className="text-xl font-semibold">Selecione o concurso</h3>
+            <span></span>
+          </div>
           <Radio.Group
             options={[
-              { label: 'Projeto Samuel', value: 'samuel' },
-              { label: 'Concurso Musical', value: 'musical' },
+              { label: 'Projeto Samuel', value: 'PROJETO SAMUEL' },
+              { label: 'Concurso Musical', value: 'CONCURSO MUSICAL' },
             ]}
             onChange={handleChangeCompetition}
             value={valueCompetition}
@@ -79,7 +101,7 @@ function Ranking() {
           <Column title="Posição" dataIndex="key" key="key" />
           <Column title="Clube" dataIndex="clube" key="clube" />
           <Column title="Pontuação" dataIndex="pontuacao" key="pontuacao" />
-          <Column title="Tempo" dataIndex="time" key="time" />
+          {/* <Column title="Tempo" dataIndex="time" key="time" /> */}
         </Table>
       </div>
     </>
