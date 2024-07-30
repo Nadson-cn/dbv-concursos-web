@@ -51,18 +51,19 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="xl:hidden flex flex-col items-center justify-center mt-10">
+    <div className="flex flex-col items-center justify-center mt-10">
       {contextHolder}
       <img src={logoProjeto} className="w-[300px]" alt="Logo" />
-      <div className="flex flex-col w-4/5">
+      <div className="hidden md:flex md:flex-col w-[15%] justify-center items-center">
         <div className="flex flex-col w-full justify-center items-center">
-          <div className="flex items-cente  w-full xl:w-4/5 ">
-            <div className="mr-10 w-full ">
+          <div className="flex items-center justify-between w-full">
+            <div>
               <h1 className="font-semibold">Nome do jurado:</h1>
               <Select
                 defaultValue=""
-                className="w-full mb-4"
+                className="w-52 mb-4"
                 onChange={handleChange}
+                disabled={isOtherName}
                 size="large"
                 options={[
                   { value: '', label: 'Escolha seu nome' },
@@ -83,15 +84,67 @@ const Login: React.FC = () => {
           {isOtherName ? (
             <>
               <h1 className="font-semibold">Insira seu nome:</h1>
-              <Input className="w-full h-12" placeholder="Nome do jurado" onChange={(e) => setName(e.target.value)} />
+              <Input className="w-72 h-12" placeholder="Nome do jurado" onChange={(e) => setName(e.target.value)} />
             </>
+          ) : null}
+        </div>
+        <div className="flex flex-col items-center justify-center w-full mt-5">
+          <h1 className="font-semibold">Senha:</h1>
+          <Input.Password
+            className="w-72 h-12 items-center justify-center"
+            placeholder="Senha"
+            onChange={(e) => setPassword(e.target.value)}
+            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+          />
+          <Button
+            type="primary"
+            onClick={handleLogin}
+            className="mt-5 bg-blue-600 hover:bg-blue-700 p-4 rounded text-base text-white h-auto w-full"
+          >
+            Entrar
+          </Button>
+        </div>
+      </div>
+
+      <div className="xl:hidden flex flex-col w-4/5">
+        <div className="flex flex-col w-full items-center">
+          <div className="flex items-center w-full">
+            <div className="mr-10 w-full ">
+              <h1 className="font-semibold">Nome do jurado:</h1>
+              <Select
+                defaultValue=""
+                className="w-full mb-4"
+                onChange={handleChange}
+                disabled={isOtherName}
+                size="large"
+                options={[
+                  { value: '', label: 'Escolha seu nome' },
+                  { value: 'Clóvis', label: 'Clóvis' },
+                  { value: 'Diego', label: 'Diego' },
+                  { value: 'Fábio', label: 'Fábio' },
+                  { value: 'Pr. Areli', label: 'Pr. Areli' },
+                  { value: 'Pr. Matheus', label: 'Pr. Matheus' },
+                ]}
+              />
+            </div>
+
+            <div>
+              <h1 className="font-semibold">Outro:</h1>
+              <Switch className="w-3 mb-3" defaultChecked={false} onChange={onChangeSwitch} />
+            </div>
+          </div>
+          {isOtherName ? (
+            <div className="w-full">
+              <h1 className="font-semibold">Insira seu nome:</h1>
+              <Input className="w-full h-12" placeholder="Nome do jurado" onChange={(e) => setName(e.target.value)} />
+            </div>
           ) : null}
         </div>
         <div className="flex flex-col w-full mt-5">
           <h1 className="font-semibold">Senha:</h1>
           <Space className="w-full" direction="vertical">
             <Input.Password
-              className="w-full h-12 xl:w-1/2"
+              className="w-full h-12"
               placeholder="Senha"
               onChange={(e) => setPassword(e.target.value)}
               iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
