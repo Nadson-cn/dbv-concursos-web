@@ -220,17 +220,7 @@ function App() {
             zIndex: 1000,
           }}
         >
-          <div
-            className="bg-white p-5 rounded-lg flex flex-col items-center"
-            // style={{
-            //   backgroundColor: 'white',
-            //   padding: '20px',
-            //   justifyContent: 'center',
-            //   alignItems: 'center',
-            //   borderRadius: '10px',
-            //   boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-            // }}
-          >
+          <div className="bg-white p-5 rounded-lg flex flex-col items-center">
             <img src={AnimationSuccess} width={90} height={90} alt="Sucesso." />
             <h2 className="text-xl font-bold">Sucesso!</h2>
             <p>Pontuação salva.</p>
@@ -280,7 +270,7 @@ function App() {
           <>
             <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
               <h3 className="text-xl font-semibold mb-2">
-                Tema do Projeto Samuel 2023: <p className="italic">O Grande Conflito</p>
+                Tema do Projeto Samuel 2024: <p className="italic">Missão ao Extremo</p>
               </h3>
             </div>
             <OptionsField

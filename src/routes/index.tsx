@@ -4,7 +4,7 @@ import Login from '../pages/Login';
 import Home from '../pages/Home';
 import Ranking from '../pages/Ranking/Ranking';
 import ResultsScreen from '../pages/Result';
-import RankingView from '../pages/RankingView/aa';
+import RankingView from '../pages/RankingView';
 import Clubes from '../pages/Clubes';
 
 export const AppRoutes: React.FC = () => {

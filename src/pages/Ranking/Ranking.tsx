@@ -30,7 +30,34 @@ function Ranking() {
       dadosFirestore.push({ id: doc.id, ...doc.data() });
     });
 
-    setResult(dadosFirestore);
+    const clubRanking: { [key: string]: any[] } = {};
+
+    dadosFirestore.forEach((score: any) => {
+      const { club, competition, total } = score;
+
+      if (!clubRanking[club]) {
+        clubRanking[club] = [];
+      }
+
+      const existingEntry = clubRanking[club].find((entry) => entry.competition === competition);
+
+      if (existingEntry) {
+        existingEntry.total += total;
+      } else {
+        clubRanking[club].push({
+          club,
+          competition,
+          total,
+        });
+      }
+    });
+
+    const finalRanking = Object.values(clubRanking).flat();
+
+    finalRanking.sort((a, b) => b.total - a.total);
+
+    setResult(finalRanking);
+    // setResult(dadosFirestore);
     console.log('querySnapshot', querySnapshot);
     console.log('dadosFirestore', dadosFirestore);
   };
@@ -74,7 +101,7 @@ function Ranking() {
           <Column title="Posição" dataIndex="key" key="key" />
           <Column title="Clube" dataIndex="clube" key="clube" />
           <Column title="Pontuação" dataIndex="pontuacao" key="pontuacao" />
-          <Column title="Tempo" dataIndex="time" key="time" />
+          {/* <Column title="Tempo" dataIndex="time" key="time" /> */}
         </Table>
       </div>
     </>
