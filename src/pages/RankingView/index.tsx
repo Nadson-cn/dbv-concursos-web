@@ -60,13 +60,13 @@ const RankingView: React.FC = () => {
 
   useEffect(() => {
     if (competicao) {
-      getClubRanking1(competicao).catch((error) => {
+      getClubRanking(competicao).catch((error) => {
         console.error('Failed to fetch ranking:', error);
       });
     }
   }, [competicao]);
 
-  const getClubRanking1 = async (competition: string) => {
+  const getClubRanking = async (competition: string) => {
     let value: string;
 
     if (competition === 'musical') {
@@ -130,22 +130,30 @@ const RankingView: React.FC = () => {
     <>
       {showFirst && <Confetti numberOfPieces={400} />}
       <div className="absolute flex flex-col m-5">
-        <Button className="text-slate-700 w-full xl:w-24 mb-3" onClick={() => navigate('/clubes')}>
+        <button
+          className="mt-4 border-2 border-blue-500 bg-white hover:bg-gray-300 text-blue-500 font-bold py-2 px-4 rounded"
+          onClick={() => navigate('/clubes')}
+        >
           Voltar
-        </Button>
-        <Button
-          className="text-slate-700 w-full xl:w-24 mb-3"
+        </button>
+        <button
+          className="mt-4 bg-blue-500 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-2 px-4 rounded"
           onClick={() => {
             setShowThird(false);
             setShowSecond(false);
             setShowFirst(false);
           }}
+          disabled={!showThird}
         >
-          Reset
-        </Button>
-        <Button className="bg-amber-900 text-white w-full xl:w-24 mb-3" onClick={handleDisplay}>
-          Exibir
-        </Button>
+          Limpar
+        </button>
+        <button
+          className="mt-4 bg-blue-500 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-2 px-4 rounded"
+          onClick={handleDisplay}
+          disabled={showFirst}
+        >
+          Próximo
+        </button>
       </div>
       <div className="bg-custom-background bg-fixed flex flex-col items-center">
         <div className="flex gap-10 mt-16">
