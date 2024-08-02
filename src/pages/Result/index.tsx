@@ -16,6 +16,7 @@ type ClubeData = {
 const ClubesPontuacao: React.FC = () => {
   const searchParams = new URLSearchParams(location.search);
   const competicao = searchParams.get('competicao');
+  const isBack = searchParams.get('isBack');
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -29,7 +30,11 @@ const ClubesPontuacao: React.FC = () => {
       getClubRanking(competicao)
         .then((rankingData) => {
           setRanking(rankingData);
-          setCurrentIndex(rankingData.length - 1);
+          if (isBack) {
+            setCurrentIndex(3);
+          } else {
+            setCurrentIndex(rankingData.length - 1);
+          }
         })
         .catch((error) => {
           console.error('Failed to fetch ranking:', error);
@@ -39,6 +44,12 @@ const ClubesPontuacao: React.FC = () => {
         });
     }
   }, [competicao]);
+
+  useEffect(() => {
+    if (isBack === 'true') {
+      setCurrentIndex(3);
+    }
+  }, [isBack]);
 
   const getClubRanking = async (competition: string): Promise<ClubeData[]> => {
     let value: string;
@@ -109,6 +120,35 @@ const ClubesPontuacao: React.FC = () => {
 
   const currentClube = ranking[currentIndex];
 
+  const Ranking = () => {
+    return (
+      <div className="flex flex-col items-center">
+        <div className="gap-2 flex flex-col w-screen justify-center items-center">
+          <div className="flex gap-[2px] items-end">
+            <div className="w-[22rem] font-semibold text-xl text-center">Posição</div>
+            <div className="w-[60rem] font-semibold text-center">Clube</div>
+            <div className="w-[24rem] font-semibold text-center">Pontuação</div>
+          </div>
+          {currentClube && (
+            <div key={currentClube.key} className="flex gap-[2px]">
+              <div className="h-[15rem] w-[22rem] rounded-l-full flex items-center justify-center bg-neutral-600">
+                <p className="font-extrabold text-8xl text-gray-300 text-center animate-fadeIn">{currentIndex + 1}°</p>
+              </div>
+              <div className="h-[15rem] w-[60rem] flex items-center justify-center bg-neutral-600">
+                <p className="font-extrabold text-8xl text-gray-300 text-center animate-fadeIn">{currentClube.clube}</p>
+              </div>
+              <div className="h-[15rem] w-[24rem] rounded-r-full flex items-center justify-center bg-neutral-600">
+                <p className="font-extrabold text-8xl text-gray-300 text-center animate-fadeIn">
+                  {currentClube.pontuacao}
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
       <div className="flex flex-col absolute m-5">
@@ -141,31 +181,31 @@ const ClubesPontuacao: React.FC = () => {
           Próximo
         </button>
       </div>
-      <div className="bg-custom-background bg-fixed flex flex-col items-center justify-center">
-        <div className="flex">
-          <img src={logoMda} alt="" className="w-[200px] h-[200px] mr-20" />
+      <div className="bg-custom-background bg-scroll flex flex-col items-center justify-center">
+        <div className="flex items-center -mt-20">
+          <img src={logoProjeto} alt="logo" className="object-cover w-[280px] h-[300px] ml-5 mr-5" />
           <div className="flex flex-col items-center">
-            <h1 className="font-extrabold text-8xl">PONTUAÇÃO</h1>
-            <img src={logoProjeto} alt="" className="object-cover w-[280px] h-[300px] ml-5 mr-5" />
-            <div className="flex flex-row items-center gap-4">
-              <h1 className="font-extrabold text-8xl">{currentIndex + 1}°</h1>
-              <h1 className="font-medium text-6xl mt-4">
-                {' '}
-                - {competicao === 'samuel' ? 'PROJETO SAMUEL' : 'CONCURSO MUSICAL'}
-              </h1>
-            </div>
+            <h1 className="font-extrabold text-8xl">
+              {competicao === 'samuel' ? 'PROJETO SAMUEL' : 'CONCURSO MUSICAL'}
+            </h1>
           </div>
           <img src={logoRegiao} alt="" className="w-[200px] h-[200px] mr-20" />
         </div>
-        <div className="flex mt-3 justify-center items-center">
+        <div className="flex justify-center items-center">
           <div className="flex">
             <div className="flex flex-col items-center">
               {loading ? (
                 <LoadingSpiner />
               ) : (
                 <>
-                  <h2 className="font-extrabold text-7xl">{currentClube?.clube}</h2>
-                  <h1 className="font-extrabold text-9xl tracking-widest">{currentClube?.pontuacao}</h1>
+                  <Ranking />
+                  {/* <div className="flex flex-row items-center gap-4">
+                    <h1 className="font-extrabold text-8xl">
+                      {currentIndex + 1}°{' - '}{' '}
+                    </h1>
+                    <h2 className="font-extrabold text-7xl">{currentClube?.clube}</h2>
+                  </div>
+                  <h1 className="font-extrabold text-9xl tracking-widest">{currentClube?.pontuacao}</h1> */}
                 </>
               )}
             </div>

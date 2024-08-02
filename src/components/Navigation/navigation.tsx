@@ -8,7 +8,7 @@ const Navigation: React.FC = () => {
     // <nav>
     <div className="flex gap-3">
       <button
-        className="border-2 border-blue-600 bg-white hover:bg-blue-700 p-4 rounded text-base text-blue-600 w-full xl:w-18"
+        className="border-2 border-blue-600 bg-white hover:bg-gray-200 p-4 rounded text-base text-blue-600 w-full xl:w-18"
         type="button"
         onClick={() => navigate('/')}
       >

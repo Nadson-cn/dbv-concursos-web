@@ -2,36 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap');
+
+@layer base {
+  body {
+    font-family: 'Rubik', sans-serif;
+  }
+}
+
+h1, h2, h3, p {
+  font-family: 'Rubik', sans-serif;
+}
 
 .bg-custom-background {
   @apply bg-cover bg-no-repeat min-h-screen;
   background-image: url('./assets/background.png');
 }
 
-body {
-  font-family: 'Roboto', sans-serif;
-}
-
 .content {
-  display: inline-flex;
-  align-items: center;
-  position: relative;
+  @apply inline-flex items-center relative;
 }
 
 .circle {
   stroke-dasharray: 113;
   stroke-dashoffset: 113;
-  animation: dc 1s ease-in-out;
-  animation-fill-mode: forwards;
+  animation: dc 1s ease-in-out forwards;
 }
 
 .tick {
   stroke-dasharray: 35;
   stroke-dashoffset: 35;
-  animation: dt 0.8s ease-out;
-  animation-fill-mode: forwards;
-  animation-delay: 0.95s;
+  animation: dt 0.8s ease-out forwards 0.95s;
 }
 
 @keyframes dc {
@@ -49,5 +50,20 @@ body {
   }
   to {
     stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@layer components {
+  .animate-fadeIn {
+    animation: fadeIn 1s ease-in-out;
   }
 }

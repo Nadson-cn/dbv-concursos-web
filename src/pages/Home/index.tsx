@@ -230,7 +230,7 @@ function App() {
       <Navigation />
       {contextHolder}
       <div className="mt-5 bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
-        <h2 className="text-xl font-semibold mb-2">PROJETO SAMUEL</h2>
+        <h2 className="text-xl font-semibold mb-2">CONCURSOS 2024</h2>
         <p>APaC - Região 09</p>
       </div>
       <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
