@@ -18,7 +18,7 @@ const Clubes: React.FC = () => {
           >
             Voltar
           </button>
-          <button
+          {/* <button
             className="bg-blue-600 hover:bg-blue-800 p-4 rounded text-xl text-white w-full xl:w-80"
             type="button"
             onClick={() => navigate('/ranking-view?competicao=samuel')}
@@ -31,16 +31,16 @@ const Clubes: React.FC = () => {
             onClick={() => navigate('/ranking-view?competicao=musical')}
           >
             TOP 3 - Concurso Musical
-          </button>
+          </button> */}
           <button
-            className="bg-green-600 hover:bg-green-800 p-4 rounded text-xl text-white w-full xl:w-80"
+            className="bg-blue-600 hover:bg-blue-800 p-4 rounded text-xl text-white w-full xl:w-80"
             type="button"
             onClick={() => navigate('/result?competicao=samuel')}
           >
             Ranking - Projeto Samuel
           </button>
           <button
-            className="bg-green-600 hover:bg-green-800 p-4 rounded text-xl text-white w-full xl:w-80"
+            className="bg-blue-600 hover:bg-blue-800 p-4 rounded text-xl text-white w-full xl:w-80"
             type="button"
             onClick={() => navigate('/result?competicao=musical')}
           >

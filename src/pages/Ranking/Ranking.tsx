@@ -101,12 +101,12 @@ function Ranking() {
     <>
       {showModal && selectedClub && (
         <Modal
-          title={`Pontuação dos Jurados - Clube ${selectedClub?.club}`}
+          title={`Detalhes - Clube ${selectedClub?.club}`}
           open={showModal}
           onCancel={() => setShowModal(false)}
           footer
         >
-          <Table pagination={false} dataSource={selectedClub?.judgeScores} rowKey="name">
+          <Table pagination={false} bordered dataSource={selectedClub?.judgeScores} rowKey="name">
             <Column title="Jurado" dataIndex="name" key="name" />
             <Column title="Pontuação" dataIndex="score" key="score" />
           </Table>
@@ -130,7 +130,7 @@ function Ranking() {
             buttonStyle="solid"
           />
         </div>
-        <Table size="large" dataSource={data}>
+        <Table size="small" dataSource={data}>
           <Column title="Posição" dataIndex="key" key="key" />
           <Column title="Clube" dataIndex="clube" key="clube" />
           <Column title="Pontuação" dataIndex="pontuacao" key="pontuacao" />
@@ -145,7 +145,7 @@ function Ranking() {
                   setShowModal(true);
                 }}
               >
-                Ver Detalhes
+                Detalhes
               </Button>
             )}
           />

@@ -18,7 +18,7 @@ const ClubesPontuacao: React.FC = () => {
   const competicao = searchParams.get('competicao');
   const isBack = searchParams.get('isBack');
 
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState<number | null>(null); // Alterado para null
   const [loading, setLoading] = useState(false);
   const [ranking, setRanking] = useState<ClubeData[]>([]);
 
@@ -32,8 +32,6 @@ const ClubesPontuacao: React.FC = () => {
           setRanking(rankingData);
           if (isBack) {
             setCurrentIndex(3);
-          } else {
-            setCurrentIndex(rankingData.length - 1);
           }
         })
         .catch((error) => {
@@ -107,18 +105,21 @@ const ClubesPontuacao: React.FC = () => {
     if (currentIndex === 3) {
       navigate(`/ranking-view?competicao=${competicao}`);
     }
-    if (currentIndex > 0) {
+
+    if (currentIndex !== null && currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
+    } else if (currentIndex === null && ranking.length > 0) {
+      setCurrentIndex(ranking.length - 1);
     }
   };
 
   const handlePrevious = () => {
-    if (currentIndex < ranking.length - 1) {
+    if (currentIndex !== null && currentIndex < ranking.length - 1) {
       setCurrentIndex(currentIndex + 1);
     }
   };
 
-  const currentClube = ranking[currentIndex];
+  const currentClube = currentIndex !== null ? ranking[currentIndex] : null;
 
   const Ranking = () => {
     return (
@@ -129,21 +130,23 @@ const ClubesPontuacao: React.FC = () => {
             <div className="w-[60rem] font-semibold text-center">Clube</div>
             <div className="w-[24rem] font-semibold text-center">Pontuação</div>
           </div>
-          {currentClube && (
-            <div key={currentClube.key} className="flex gap-[2px]">
-              <div className="h-[15rem] w-[22rem] rounded-l-full flex items-center justify-center bg-neutral-600">
-                <p className="font-extrabold text-8xl text-gray-300 text-center animate-fadeIn">{currentIndex + 1}°</p>
-              </div>
-              <div className="h-[15rem] w-[60rem] flex items-center justify-center bg-neutral-600">
-                <p className="font-extrabold text-8xl text-gray-300 text-center animate-fadeIn">{currentClube.clube}</p>
-              </div>
-              <div className="h-[15rem] w-[24rem] rounded-r-full flex items-center justify-center bg-neutral-600">
-                <p className="font-extrabold text-8xl text-gray-300 text-center animate-fadeIn">
-                  {currentClube.pontuacao}
-                </p>
-              </div>
+          <div key={currentClube?.key} className="flex gap-[2px]">
+            <div className="h-[15rem] w-[22rem] rounded-l-full flex items-center justify-center bg-neutral-600">
+              <p className="font-extrabold text-8xl text-gray-300 text-center animate-fadeIn">
+                {currentClube ? `${currentIndex + 1}°` : ''}
+              </p>
             </div>
-          )}
+            <div className="h-[15rem] w-[60rem] flex items-center justify-center bg-neutral-600">
+              <p className="font-extrabold text-8xl text-gray-300 text-center animate-fadeIn">
+                {currentClube ? currentClube.clube : ''}
+              </p>
+            </div>
+            <div className="h-[15rem] w-[24rem] rounded-r-full flex items-center justify-center bg-neutral-600">
+              <p className="font-extrabold text-8xl text-gray-300 text-center animate-fadeIn">
+                {currentClube ? currentClube.pontuacao : ''}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -169,7 +172,7 @@ const ClubesPontuacao: React.FC = () => {
         <button
           className="mt-4 bg-blue-500 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-2 px-4 rounded"
           onClick={handlePrevious}
-          disabled={currentIndex === ranking.length - 1}
+          disabled={currentIndex === null || currentIndex === ranking.length - 1}
         >
           Anterior
         </button>
@@ -199,13 +202,6 @@ const ClubesPontuacao: React.FC = () => {
               ) : (
                 <>
                   <Ranking />
-                  {/* <div className="flex flex-row items-center gap-4">
-                    <h1 className="font-extrabold text-8xl">
-                      {currentIndex + 1}°{' - '}{' '}
-                    </h1>
-                    <h2 className="font-extrabold text-7xl">{currentClube?.clube}</h2>
-                  </div>
-                  <h1 className="font-extrabold text-9xl tracking-widest">{currentClube?.pontuacao}</h1> */}
                 </>
               )}
             </div>
