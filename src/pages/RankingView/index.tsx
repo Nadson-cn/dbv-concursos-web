@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { firestore } from '../../configs/firebase';
-// import useWindowSize from 'react-use/lib/useWindowSize';
 import Confetti from 'react-confetti';
 
-// import logoMda from '../../assets/Logo-mda-apac.png';
 import logoRegiao from '../../assets/Logo-regiao-9.png';
 import trofeu1 from '../../assets/Trofeu-1-lugar.png';
 import trofeu2 from '../../assets/Trofeu-2-lugar.png';
@@ -13,14 +11,20 @@ import trofeu3 from '../../assets/Trofeu-3-lugar.png';
 import logoProjeto from '../../assets/Logo-projeto-samuel-2024-nobg.png';
 
 const TrophyDisplay = ({ place, trophy, data, show }: any) => (
-  <div className={`flex flex-col items-center ${place === '1º Lugar' ? '-mt-14' : 'mt-5'} animate-fadeIn`}>
-    <img src={trophy} alt={`${place} Trophy`} className="w-[150px] h-[150px] ml-5 mr-5" />
+  <div className={`flex flex-col w-full items-center ${place === '1º Lugar' ? '-mt-14' : 'mt-5'} animate-fadeIn`}>
+    <img src={trophy} alt={`${place} Trophy`} className="w-32 h-32 ml-5 mr-5" />
     <h2 className="font-extrabold font-rubik text-7xl">{place}</h2>
     {show && data && (
-      <>
-        <h1 className="font-extrabold font-rubik text-9xl tracking-widest animate-fadeIn">{data.total}</h1>
+      <div className="flex flex-col items-center justify-center mt-4 w-full">
+        <h1
+          className={`font-extrabold ${
+            place === '1º Lugar' ? 'text-yellow-500' : place === '2º Lugar' ? 'text-zinc-600' : 'text-yellow-950'
+          } font-rubik text-9xl text-center tracking-widest animate-fadeIn`}
+        >
+          {data.total}
+        </h1>
         <h1 className="font-extrabold font-rubik text-5xl animate-fadeIn">{data.club}</h1>
-      </>
+      </div>
     )}
   </div>
 );
@@ -151,7 +155,7 @@ const RankingView: React.FC = () => {
           <img src={logoRegiao} alt="Logo Regiao" className="w-[200px] h-[200px] mr-20" />
         </div>
         <div className="flex justify-center items-center mt-20">
-          <div className="flex gap-32">
+          <div className="flex flex-row w-screen justify-center">
             <TrophyDisplay place="2º Lugar" trophy={trofeu2} data={ranking[1]} show={showSecond} />
             <TrophyDisplay place="1º Lugar" trophy={trofeu1} data={ranking[0]} show={showFirst} />
             <TrophyDisplay place="3º Lugar" trophy={trofeu3} data={ranking[2]} show={showThird} />
