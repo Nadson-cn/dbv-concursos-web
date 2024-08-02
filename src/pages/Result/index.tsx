@@ -133,7 +133,7 @@ const ClubesPontuacao: React.FC = () => {
           <div key={currentClube?.key} className="flex gap-[2px]">
             <div className="h-[15rem] w-[22rem] rounded-l-full flex items-center justify-center bg-neutral-600">
               <p className="font-extrabold text-8xl text-gray-300 text-center animate-fadeIn">
-                {currentClube ? `${currentIndex + 1}°` : ''}
+                {currentClube ? `${currentIndex && currentIndex + 1}°` : ''}
               </p>
             </div>
             <div className="h-[15rem] w-[60rem] flex items-center justify-center bg-neutral-600">
