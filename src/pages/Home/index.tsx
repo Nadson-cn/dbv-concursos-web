@@ -164,6 +164,7 @@ function App() {
     setIsActive(false);
     setEditTime(false);
     setTime(0);
+    handleStop();
   };
 
   const handleOptionProjetoSamuelChange = (
@@ -355,69 +356,62 @@ function App() {
                 Tema do Projeto Samuel 2024: <p className="italic">Missão ao Extremo</p>
               </h3>
             </div>
-            <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
-              <div className="flex flex-col gap-4 text-xl font-bold mb-2">
-                <p>
-                  Cronômetro: {Math.floor(time / 60)}:{('0' + (time % 60)).slice(-2)} Minutos
-                </p>
-                {/* CRONOMETRO */}
-                <div className="flex">
-                  {!isActive ? (
-                    <button
-                      type="button"
-                      className="bg-blue-500 hover:bg-blue-600 p-2 rounded text-white"
-                      onClick={handleStart}
-                    >
-                      Iniciar
-                    </button>
-                  ) : isPaused ? (
-                    <div className="flex items-center gap-2">
+            {!editTime && (
+              <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
+                <div className="flex flex-col gap-4 text-xl font-bold mb-2">
+                  <p>
+                    Cronômetro: {Math.floor(time / 60)}:{('0' + (time % 60)).slice(-2)} Minutos
+                  </p>
+                  {/* CRONOMETRO */}
+                  <div className="flex">
+                    {!isActive ? (
                       <button
                         type="button"
-                        className="bg-yellow-500 hover:bg-yellow-600 p-2 rounded text-white mx-2"
-                        onClick={handleResume}
+                        className="bg-blue-500 hover:bg-blue-600 p-2 rounded text-white"
+                        onClick={handleStart}
                       >
-                        Retomar
+                        Iniciar
                       </button>
-                      <button
-                        type="button"
-                        className="bg-red-500 hover:bg-red-600 p-2 rounded text-white"
-                        onClick={handleStop}
-                      >
-                        Resetar
-                      </button>
-                      {/* {editTime && (
+                    ) : isPaused ? (
+                      <div className="flex items-center gap-2">
                         <button
                           type="button"
-                          className="bg-green-500 hover:bg-green-600 p-2 rounded text-white"
+                          className="bg-yellow-500 hover:bg-yellow-600 p-2 rounded text-white mx-2"
+                          onClick={handleResume}
+                        >
+                          Retomar
+                        </button>
+                        <button
+                          type="button"
+                          className="bg-red-500 hover:bg-red-600 p-2 rounded text-white"
                           onClick={handleStop}
                         >
-                          Salvar
+                          Resetar
                         </button>
-                      )} */}
-                    </div>
-                  ) : (
-                    <>
-                      <button
-                        type="button"
-                        className="bg-yellow-500 hover:bg-yellow-600 p-2 rounded text-white mx-2"
-                        onClick={handlePause}
-                      >
-                        Pausar
-                      </button>
-                      <button
-                        type="button"
-                        className="bg-red-500 hover:bg-red-600 p-2 rounded text-white"
-                        onClick={handleStop}
-                      >
-                        Resetar
-                      </button>
-                    </>
-                  )}
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          className="bg-yellow-500 hover:bg-yellow-600 p-2 rounded text-white mx-2"
+                          onClick={handlePause}
+                        >
+                          Pausar
+                        </button>
+                        <button
+                          type="button"
+                          className="bg-red-500 hover:bg-red-600 p-2 rounded text-white"
+                          onClick={handleStop}
+                        >
+                          Resetar
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
+                {/* FIM - CRONOMETRO */}
               </div>
-              {/* FIM - CRONOMETRO */}
-            </div>
+            )}
             <OptionsField
               onChange={(value) => handleOptionProjetoSamuelChange('uniforme', value)}
               options={commonOptions}
@@ -452,7 +446,7 @@ function App() {
             <OptionsField
               onChange={(value) => handleOptionProjetoSamuelChange('citacao', value)}
               options={commonOptions}
-              title="Citação E.P.:"
+              title="Citação Espirito de Profêcia:"
               value={optionsProjetoSamuel.citacao}
               submitted={submitted}
             />
@@ -603,6 +597,62 @@ function App() {
           </>
         ) : (
           <>
+            {!editTime && (
+              <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
+                <div className="flex flex-col gap-4 text-xl font-bold mb-2">
+                  <p>
+                    Cronômetro: {Math.floor(time / 60)}:{('0' + (time % 60)).slice(-2)} Minutos
+                  </p>
+                  {/* CRONOMETRO */}
+                  <div className="flex">
+                    {!isActive ? (
+                      <button
+                        type="button"
+                        className="bg-blue-500 hover:bg-blue-600 p-2 rounded text-white"
+                        onClick={handleStart}
+                      >
+                        Iniciar
+                      </button>
+                    ) : isPaused ? (
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          className="bg-yellow-500 hover:bg-yellow-600 p-2 rounded text-white mx-2"
+                          onClick={handleResume}
+                        >
+                          Retomar
+                        </button>
+                        <button
+                          type="button"
+                          className="bg-red-500 hover:bg-red-600 p-2 rounded text-white"
+                          onClick={handleStop}
+                        >
+                          Resetar
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          className="bg-yellow-500 hover:bg-yellow-600 p-2 rounded text-white mx-2"
+                          onClick={handlePause}
+                        >
+                          Pausar
+                        </button>
+                        <button
+                          type="button"
+                          className="bg-red-500 hover:bg-red-600 p-2 rounded text-white"
+                          onClick={handleStop}
+                        >
+                          Resetar
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+                {/* FIM - CRONOMETRO */}
+              </div>
+            )}
             <OptionsField
               onChange={(value) => handleOptionConcursoMusicalChange('membros', value)}
               options={commonOptions}
@@ -678,12 +728,87 @@ function App() {
               value={optionsConcursoMusical.ilustracoes}
               submitted={submitted}
             />
-            <OptionsInputField
-              submitted={submitted}
-              title="Tempo utilizado"
-              value={tempoUtilizado}
-              onChange={(e) => setTempoUtilizado(e.target.value)}
-            />
+            {editTime && (
+              <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
+                <h3 className="text-xl font-semibold mb-2">Tempo utilizado - mm:ss</h3>
+                <TimePicker
+                  defaultValue={dayjs('00:00', format)}
+                  size="large"
+                  value={timeAnt} // Define o valor atual do TimePicker
+                  format={format} // Define o formato para exibição
+                  onChange={(value: any) => handleChange(value)} // Atualiza o valor no estado
+                  minuteStep={1}
+                  secondStep={1}
+                  changeOnScroll={true}
+                  showNow={false}
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
+                  autoFocus
+                  onFocus={(event) => {
+                    event.preventDefault();
+                    event.target.blur();
+                  }}
+                />
+              </div>
+            )}
+            <div
+              className={`${editTime ? 'hidden' : 'flex flex-col'} bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2`}
+            >
+              <div className="flex items-center py-5 justify-between">
+                <h3 className="text-xl font-semibold mb-2">Tempo utilizado</h3>
+              </div>
+              <div className="flex-col gap-4 text-xl font-bold mb-2">
+                <p>
+                  Cronômetro: {Math.floor(time / 60)}:{('0' + (time % 60)).slice(-2)} Minutos
+                </p>
+                {/* CRONOMETRO */}
+                <div className="flex">
+                  {!isActive ? (
+                    <button
+                      type="button"
+                      className="bg-blue-500 hover:bg-blue-600 p-2 rounded text-white"
+                      onClick={handleStart}
+                    >
+                      Iniciar
+                    </button>
+                  ) : isPaused ? (
+                    <>
+                      <button
+                        type="button"
+                        className="bg-yellow-500 hover:bg-yellow-600 p-2 rounded text-white mx-2"
+                        onClick={handleResume}
+                      >
+                        Retomar
+                      </button>
+                      <button
+                        type="button"
+                        className="bg-green-500 hover:bg-green-600 p-2 rounded text-white"
+                        onClick={handleSaveTime}
+                      >
+                        Salvar
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        className="bg-yellow-500 hover:bg-yellow-600 p-2 rounded text-white mx-2"
+                        onClick={handlePause}
+                      >
+                        Pausar
+                      </button>
+                      <button
+                        type="button"
+                        className="bg-red-500 hover:bg-red-600 p-2 rounded text-white"
+                        onClick={handleStop}
+                      >
+                        Resetar
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+              {/* FIM - CRONOMETRO */}
+            </div>
 
             <button
               className="bg-blue-600 hover:bg-blue-700 p-4 rounded text-xl text-white w-full xl:w-1/2"
