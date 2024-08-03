@@ -496,6 +496,7 @@ function App() {
                 <h3 className="text-xl font-semibold mb-2">Tempo utilizado - mm:ss</h3>
                 <TimePicker
                   defaultValue={dayjs('00:00', format)}
+                  size="large"
                   value={timeAnt} // Define o valor atual do TimePicker
                   format={format} // Define o formato para exibição
                   onChange={(value: any) => handleChange(value)} // Atualiza o valor no estado
