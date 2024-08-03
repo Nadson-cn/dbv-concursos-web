@@ -492,12 +492,6 @@ function App() {
               submitted={submitted}
             />
             {editTime && (
-              // <OptionsInputField
-              //   submitted={submitted}
-              //   title="Tempo utilizado"
-              //   value={time.toString()}
-              //   onChange={(e) => setTempoUtilizado(e.target.value)}
-              // />
               <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
                 <h3 className="text-xl font-semibold mb-2">Tempo utilizado - mm:ss</h3>
                 <TimePicker
@@ -509,6 +503,12 @@ function App() {
                   secondStep={1}
                   changeOnScroll={true}
                   showNow={false}
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
+                  autoFocus
+                  onFocus={(event) => {
+                    event.preventDefault();
+                    event.target.blur();
+                  }}
                 />
               </div>
             )}
