@@ -19,6 +19,12 @@ h1, h2, h3, p {
   background-image: url('./assets/background.png');
 }
 
+.ant-picker-ok button {
+  background-color: #005eff !important; /* Altere para a cor desejada */
+  color: #ffffff !important; /* Altere a cor do texto se necessário */
+  
+}
+
 .content {
   @apply inline-flex items-center relative;
 }

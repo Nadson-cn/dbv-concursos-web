@@ -386,7 +386,7 @@ function App() {
                       >
                         Resetar
                       </button>
-                      {editTime && (
+                      {/* {editTime && (
                         <button
                           type="button"
                           className="bg-green-500 hover:bg-green-600 p-2 rounded text-white"
@@ -394,7 +394,7 @@ function App() {
                         >
                           Salvar
                         </button>
-                      )}
+                      )} */}
                     </div>
                   ) : (
                     <>
