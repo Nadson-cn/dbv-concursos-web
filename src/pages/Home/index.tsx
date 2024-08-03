@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Select, Spin, notification } from 'antd';
-import { useState } from 'react';
-import { MehOutlined, SmileOutlined } from '@ant-design/icons';
+import { Select, Spin, notification, TimePicker } from 'antd';
+import { useEffect, useState } from 'react';
+import { MehOutlined } from '@ant-design/icons';
 import type { RadioChangeEvent } from 'antd';
 import OptionsField from '../../components/OptionsField';
 import Navigation from '../../components/Navigation/navigation';
@@ -11,6 +11,10 @@ import { useLocation } from 'react-router-dom';
 import { addDoc, collection } from 'firebase/firestore';
 import { firestore } from '../../configs/firebase';
 import AnimationSuccess from '../../assets/AnimationSuccess.gif';
+import dayjs from 'dayjs';
+import 'antd/dist/reset.css';
+
+const format = 'mm:ss';
 
 const clubeOptions = allClubes.map((clube) => ({
   value: clube,
@@ -66,6 +70,72 @@ function App() {
   const [api, contextHolder] = notification.useNotification();
   const [showSuccess, setShowSuccess] = useState(false);
 
+  // -- CRONOMETRO --
+  // Efeito para iniciar e parar o cronômetro
+  const [time, setTime] = useState<number>(0); // Tempo total
+  const [editTime, setEditTime] = useState(false);
+  const [isActive, setIsActive] = useState<boolean>(false); // Cronômetro está ativo?
+  const [isPaused, setIsPaused] = useState<boolean>(false); // Cronômetro está pausado?
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null); // ID do intervalo
+  const [timeAnt, setTimeAnt] = useState<dayjs.Dayjs | null>(dayjs('00:00', format));
+
+  useEffect(() => {
+    if (isActive && !isPaused) {
+      const id = setInterval(() => setTime((prevTime) => prevTime + 1), 1000);
+      setIntervalId(id);
+    } else if (!isActive || isPaused) {
+      if (intervalId) clearInterval(intervalId);
+    }
+    // Função de limpeza para limpar o intervalo
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [isActive, isPaused]);
+
+  const handleStart = () => {
+    setIsActive(true);
+    setIsPaused(false);
+  };
+
+  const handlePause = () => setIsPaused(true);
+
+  const handleResume = () => setIsPaused(false);
+
+  const handleStop = () => {
+    setIsActive(false);
+    setIsPaused(false);
+    setTime(0); // Optional: Reset time on stop
+  };
+
+  const secondsToTimePickerValue = (seconds: number): dayjs.Dayjs => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return dayjs().minute(minutes).second(remainingSeconds); // Cria um objeto dayjs com os minutos e segundos
+  };
+
+  const handleSaveTime = () => {
+    const fomatted = secondsToTimePickerValue(time);
+    // setSecondsTime(time);
+    setTempoUtilizado(formatSeconds(time));
+    setTimeAnt(fomatted); // Atualize o campo de tempo utilizado com o tempo atual do cronômetro
+    setEditTime(true);
+  };
+
+  const handleChange = (value: dayjs.Dayjs | null) => {
+    console.log('value', value);
+    setTimeAnt(value); // Atualiza o estado com o novo valor
+
+    if (value) {
+      const hours = value.hour(); // Obtém a hora
+      const minutes = value.minute(); // Obtém os minutos
+      const totalSeconds = hours * 3600 + minutes * 60; // Converte para segundos
+      setTempoUtilizado(formatSeconds(totalSeconds));
+
+      console.log('Minutos:', minutes);
+      console.log('Total em segundos:', totalSeconds);
+    }
+  };
+  // ----------------
   const errorNotification = () => {
     api.open({
       message: 'Preencha todos os campos',
@@ -88,6 +158,12 @@ function App() {
     setSubmitted(false);
     setValueClube('');
     setTempoUtilizado('');
+    setTimeAnt(null);
+    setIntervalId(null);
+    setIsPaused(false);
+    setIsActive(false);
+    setEditTime(false);
+    setTime(0);
   };
 
   const handleOptionProjetoSamuelChange = (
@@ -110,8 +186,14 @@ function App() {
     }));
   };
 
+  const formatSeconds = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+  };
   const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    console.log('submit');
     e.preventDefault();
 
     setSubmitted(true);
@@ -159,7 +241,7 @@ function App() {
         competition: valueCompetition === 1 ? 'CONCURSO MUSICAL' : 'PROJETO SAMUEL',
         club: valueClube,
         name: name || nameLocalStorage,
-        time: tempoUtilizado,
+        time: valueCompetition === 1 ? 'musica' : tempoUtilizado,
         options,
         total: Object.keys(options).reduce((acc, key) => {
           if (key !== 'tempoUtilizado') {
@@ -273,6 +355,69 @@ function App() {
                 Tema do Projeto Samuel 2024: <p className="italic">Missão ao Extremo</p>
               </h3>
             </div>
+            <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
+              <div className="flex flex-col gap-4 text-xl font-bold mb-2">
+                <p>
+                  Cronômetro: {Math.floor(time / 60)}:{('0' + (time % 60)).slice(-2)} Minutos
+                </p>
+                {/* CRONOMETRO */}
+                <div className="flex">
+                  {!isActive ? (
+                    <button
+                      type="button"
+                      className="bg-blue-500 hover:bg-blue-600 p-2 rounded text-white"
+                      onClick={handleStart}
+                    >
+                      Iniciar
+                    </button>
+                  ) : isPaused ? (
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        className="bg-yellow-500 hover:bg-yellow-600 p-2 rounded text-white mx-2"
+                        onClick={handleResume}
+                      >
+                        Retomar
+                      </button>
+                      <button
+                        type="button"
+                        className="bg-red-500 hover:bg-red-600 p-2 rounded text-white"
+                        onClick={handleStop}
+                      >
+                        Resetar
+                      </button>
+                      {editTime && (
+                        <button
+                          type="button"
+                          className="bg-green-500 hover:bg-green-600 p-2 rounded text-white"
+                          onClick={handleStop}
+                        >
+                          Salvar
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        className="bg-yellow-500 hover:bg-yellow-600 p-2 rounded text-white mx-2"
+                        onClick={handlePause}
+                      >
+                        Pausar
+                      </button>
+                      <button
+                        type="button"
+                        className="bg-red-500 hover:bg-red-600 p-2 rounded text-white"
+                        onClick={handleStop}
+                      >
+                        Resetar
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+              {/* FIM - CRONOMETRO */}
+            </div>
             <OptionsField
               onChange={(value) => handleOptionProjetoSamuelChange('uniforme', value)}
               options={commonOptions}
@@ -346,12 +491,87 @@ function App() {
               value={optionsProjetoSamuel.ilustracoes}
               submitted={submitted}
             />
-            <OptionsInputField
-              submitted={submitted}
-              title="Tempo utilizado"
-              value={tempoUtilizado}
-              onChange={(e) => setTempoUtilizado(e.target.value)}
-            />
+            {editTime && (
+              // <OptionsInputField
+              //   submitted={submitted}
+              //   title="Tempo utilizado"
+              //   value={time.toString()}
+              //   onChange={(e) => setTempoUtilizado(e.target.value)}
+              // />
+              <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
+                <h3 className="text-xl font-semibold mb-2">Tempo utilizado - mm:ss</h3>
+                <TimePicker
+                  defaultValue={dayjs('00:00', format)}
+                  value={timeAnt} // Define o valor atual do TimePicker
+                  format={format} // Define o formato para exibição
+                  onChange={(value: any) => handleChange(value)} // Atualiza o valor no estado
+                  minuteStep={1}
+                  secondStep={1}
+                  changeOnScroll={true}
+                  showNow={false}
+                />
+              </div>
+            )}
+            <div
+              className={`${editTime ? 'hidden' : 'flex flex-col'} bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2`}
+            >
+              <div className="flex items-center py-5 justify-between">
+                <h3 className="text-xl font-semibold mb-2">Tempo utilizado</h3>
+              </div>
+              <div className="flex-col gap-4 text-xl font-bold mb-2">
+                <p>
+                  Cronômetro: {Math.floor(time / 60)}:{('0' + (time % 60)).slice(-2)} Minutos
+                </p>
+                {/* CRONOMETRO */}
+                <div className="flex">
+                  {!isActive ? (
+                    <button
+                      type="button"
+                      className="bg-blue-500 hover:bg-blue-600 p-2 rounded text-white"
+                      onClick={handleStart}
+                    >
+                      Iniciar
+                    </button>
+                  ) : isPaused ? (
+                    <>
+                      <button
+                        type="button"
+                        className="bg-yellow-500 hover:bg-yellow-600 p-2 rounded text-white mx-2"
+                        onClick={handleResume}
+                      >
+                        Retomar
+                      </button>
+                      <button
+                        type="button"
+                        className="bg-green-500 hover:bg-green-600 p-2 rounded text-white"
+                        onClick={handleSaveTime}
+                      >
+                        Salvar
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        className="bg-yellow-500 hover:bg-yellow-600 p-2 rounded text-white mx-2"
+                        onClick={handlePause}
+                      >
+                        Pausar
+                      </button>
+                      <button
+                        type="button"
+                        className="bg-red-500 hover:bg-red-600 p-2 rounded text-white"
+                        onClick={handleStop}
+                      >
+                        Resetar
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+              {/* FIM - CRONOMETRO */}
+            </div>
+
             <button
               className="bg-blue-600 hover:bg-blue-700 p-4 rounded text-xl text-white w-full xl:w-1/2"
               type="submit"
