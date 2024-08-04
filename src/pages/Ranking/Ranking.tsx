@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Button, Radio, RadioChangeEvent, Table, Modal } from 'antd';
+import { Button, Radio, RadioChangeEvent, Table, Modal, Form, InputNumber } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { firestore } from '../../configs/firebase';
 import ArrowBack from '../../assets/arrow-back.svg';
 const { Column } = Table;
@@ -24,7 +24,9 @@ function Ranking() {
   const [showModal, setShowModal] = useState(false);
   const [selectedClub, setSelectedClub] = useState<any>(null);
   const [judgeScores, setJudgeScores] = useState<any>(null);
+  const nameLocalStorage = window.localStorage.getItem('name');
 
+  const [editForm] = Form.useForm();
   const handleChangeCompetition = ({ target: { value } }: RadioChangeEvent) => {
     setValueCompetition(value);
   };
@@ -36,12 +38,11 @@ function Ranking() {
     querySnapshot.forEach((doc) => {
       dadosFirestore.push({ id: doc.id, ...doc.data() });
     });
-
     const judgeScore: { [key: string]: any[] } = {};
     const clubRanking: { [key: string]: any[] } = {};
 
     dadosFirestore.forEach((score: any) => {
-      const { club, competition, total, name } = score;
+      const { club, competition, total, name, id, time } = score;
 
       if (!clubRanking[club]) {
         clubRanking[club] = [];
@@ -57,14 +58,18 @@ function Ranking() {
         existingEntry.total += total;
       } else {
         clubRanking[club].push({
+          id,
           club,
           competition,
           total,
+          time,
         });
       }
 
       judgeScore[club].push({
+        id,
         name,
+        time,
         score: total, // Aqui assumimos que `total` é a pontuação dada pelo jurado
       });
     });
@@ -80,6 +85,38 @@ function Ranking() {
     setJudgeScores(judgeScoresArray);
     setResult(finalRanking);
     // setResult(dadosFirestore);
+  };
+
+  const deleteScore = async (scoreId: string) => {
+    try {
+      await deleteDoc(doc(firestore, 'scores', scoreId));
+      fetchData(); // Re-fetch data to update the state after deletion
+      setShowModal(false);
+    } catch (error) {
+      console.error('Error deleting score: ', error);
+    }
+  };
+
+  const editScore = async (scoreId: string, newScore: number) => {
+    try {
+      const scoreDoc = doc(firestore, 'scores', scoreId);
+      await updateDoc(scoreDoc, { total: newScore });
+      fetchData(); // Re-fetch data to update the state after editing
+      setShowModal(false);
+    } catch (error) {
+      console.error('Error updating score: ', error);
+    }
+  };
+
+  const confirmDeletion = (scoreId: string) => {
+    Modal.confirm({
+      title: 'Você tem certeza que deseja excluir esta pontuação?',
+      content: 'Esta ação não pode ser desfeita.',
+      okText: 'Sim',
+      okType: 'danger',
+      cancelText: 'Não',
+      onOk: () => deleteScore(scoreId),
+    });
   };
 
   useEffect(() => {
@@ -109,6 +146,53 @@ function Ranking() {
           <Table pagination={false} bordered dataSource={selectedClub?.judgeScores} rowKey="name">
             <Column title="Jurado" dataIndex="name" key="name" />
             <Column title="Pontuação" dataIndex="score" key="score" />
+            <Column title="Tempo" dataIndex="time" key="time" />
+            {nameLocalStorage === 'Nadson' && (
+              <Column
+                title="Ações"
+                dataIndex="acoes"
+                key="acoes"
+                render={(text, record: { id: string; key: string; clube: string; pontuacao: string }) => (
+                  <div className="flex flex-row justify-center items-center gap-2">
+                    <Button
+                      onClick={() => {
+                        console.log('record', record);
+                        confirmDeletion(record.id);
+                      }}
+                    >
+                      Excluir
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        editForm.setFieldsValue({ newScore: record.pontuacao });
+                        Modal.confirm({
+                          title: 'Editar Pontuação',
+                          content: (
+                            <Form form={editForm}>
+                              <Form.Item
+                                name="newScore"
+                                label="Nova Pontuação"
+                                rules={[{ required: true, message: 'Insira a nova pontuação' }]}
+                              >
+                                <InputNumber min={0} />
+                              </Form.Item>
+                            </Form>
+                          ),
+                          okText: 'Atualizar',
+                          okType: 'default',
+                          onOk: () => {
+                            const newScore = editForm.getFieldValue('newScore');
+                            editScore(record.id, newScore);
+                          },
+                        });
+                      }}
+                    >
+                      Editar
+                    </Button>
+                  </div>
+                )}
+              />
+            )}
           </Table>
         </Modal>
       )}
@@ -135,7 +219,7 @@ function Ranking() {
           <Column title="Clube" dataIndex="clube" key="clube" />
           <Column title="Pontuação" dataIndex="pontuacao" key="pontuacao" />
           <Column
-            title="Ver Jurados"
+            title="Ver Detalhes"
             dataIndex="time"
             key="jurados"
             render={(text, record: { key: string; clube: string; pontuacao: string }) => (

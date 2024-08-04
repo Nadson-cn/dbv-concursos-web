@@ -15,7 +15,7 @@ const Navigation: React.FC = () => {
         Sair
       </button>
 
-      {nameLocalStorage === 'Fábio' && (
+      {(nameLocalStorage === 'Fábio' || nameLocalStorage === 'Nadson') && (
         <>
           <button
             className="bg-blue-600 hover:bg-blue-700 p-4 rounded text-base text-white w-full xl:w-18"
