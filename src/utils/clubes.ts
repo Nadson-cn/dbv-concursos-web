@@ -7,6 +7,7 @@ export const allClubes = [
   'Falcão',
   'Guardiões da Alvorada',
   'Guerreiros da Fé',
+  'Guerreiros de Cristo',
   'Leões dos Pinheiros',
   'Luz do Universo',
   'Semeadores',
