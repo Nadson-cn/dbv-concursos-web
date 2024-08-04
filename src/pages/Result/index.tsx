@@ -131,18 +131,18 @@ const ClubesPontuacao: React.FC = () => {
             <div className="w-[24rem] font-semibold text-center">Pontuação</div>
           </div>
           <div key={currentClube?.key} className="flex gap-2 items-center justify-center">
-            <div className="h-[15rem] w-[22rem] rounded-l-full flex items-center justify-center bg-neutral-600">
-              <p className="font-extrabold text-8xl mt-auto text-gray-300 text-center animate-fadeIn">
+            <div className="h-[15rem] w-[22rem] rounded-l-full flex items-center justify-center bg-gray-700">
+              <p className="font-extrabold text-8xl -mb-[1px] text-gray-300 text-center animate-fadeIn">
                 {currentClube ? `${currentIndex && currentIndex + 1}°` : ''}
               </p>
             </div>
-            <div className="h-[15rem] w-[60rem] flex items-center justify-center bg-neutral-600">
-              <p className="font-extrabold text-8xl mt-auto text-gray-300 text-center animate-fadeIn">
+            <div className="h-[15rem] w-[60rem] flex items-center justify-center bg-gray-700">
+              <p className="font-extrabold text-8xl -mb-[1px] text-gray-300 text-center animate-fadeIn">
                 {currentClube ? currentClube.clube : ''}
               </p>
             </div>
-            <div className="h-[15rem] w-[24rem] rounded-r-full flex items-center justify-center bg-neutral-600">
-              <p className="font-extrabold text-8xl mt-auto text-gray-300 text-center animate-fadeIn">
+            <div className="h-[15rem] w-[24rem] rounded-r-full flex items-center justify-center bg-gray-700">
+              <p className="font-extrabold text-8xl -mb-[1px] text-gray-300 text-center animate-fadeIn">
                 {currentClube ? currentClube.pontuacao : ''}
               </p>
             </div>
