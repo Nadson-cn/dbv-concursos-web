@@ -242,7 +242,7 @@ function App() {
         competition: valueCompetition === 1 ? 'CONCURSO MUSICAL' : 'PROJETO SAMUEL',
         club: valueClube,
         name: name || nameLocalStorage,
-        time: valueCompetition === 1 ? 'musica' : tempoUtilizado,
+        time: tempoUtilizado,
         options,
         total: Object.keys(options).reduce((acc, key) => {
           if (key !== 'tempoUtilizado') {
