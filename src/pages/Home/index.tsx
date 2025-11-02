@@ -54,6 +54,24 @@ const initialOptionsConcursoMusical = {
   ilustracoes: null,
 };
 
+const COMPETITION_TYPES = {
+  MUSICAL: 1,
+  PROJETO_SAMUEL: 2,
+} as const;
+
+const COMPETITION_NAMES = {
+  [COMPETITION_TYPES.MUSICAL]: 'CONCURSO MUSICAL',
+  [COMPETITION_TYPES.PROJETO_SAMUEL]: 'PROJETO SAMUEL',
+} as const;
+
+// Função auxiliar também fora do componente
+const calculateTotal = (options: Record<string, number | null>): number => {
+  return Object.entries(options)
+    .filter(([key, value]) => key !== 'tempoUtilizado' && value !== null)
+    .reduce((acc, [, value]) => acc + (value || 0), 0);
+};
+
+
 function App() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -192,7 +210,9 @@ function App() {
     const remainingSeconds = seconds % 60;
     return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
   };
+
   const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     console.log('submit');
     e.preventDefault();
@@ -206,7 +226,6 @@ function App() {
 
     if (valueCompetition === 2) {
       options = optionsProjetoSamuel;
-
       requiredFields = [
         optionsProjetoSamuel.uniforme,
         optionsProjetoSamuel.tempo,
@@ -237,34 +256,49 @@ function App() {
       ];
     }
 
-    if (valueClube && requiredFields.every((field) => field !== null) && tempoUtilizado !== '') {
-      const body = {
-        competition: valueCompetition === 1 ? 'CONCURSO MUSICAL' : 'PROJETO SAMUEL',
-        club: valueClube,
-        name: name || nameLocalStorage,
-        time: tempoUtilizado,
-        options,
-        total: Object.keys(options).reduce((acc, key) => {
-          if (key !== 'tempoUtilizado') {
-            return acc + options![key]!;
-          }
-          return acc;
-        }, 0),
-      };
-      console.log('body', body);
-
-      await addDoc(collection(firestore, 'scores'), body);
-
+    // Validação dos campos obrigatórios
+    if (!valueClube || !requiredFields.every((field) => field !== null) || tempoUtilizado === '') {
+      errorNotification();
+      console.log('Preencha todos os campos obrigatórios');
       setLoading(false);
+      return;
+    }
+
+    // Determinar nome da competição de forma mais segura
+    const getCompetitionName = (value: number | null): string => {
+      if (value === COMPETITION_TYPES.MUSICAL) return COMPETITION_NAMES[COMPETITION_TYPES.MUSICAL];
+      if (value === COMPETITION_TYPES.PROJETO_SAMUEL) return COMPETITION_NAMES[COMPETITION_TYPES.PROJETO_SAMUEL];
+      return 'PROJETO SAMUEL'; // fallback
+    };
+
+    const body = {
+      competition: getCompetitionName(valueCompetition),
+      club: valueClube,
+      name: name || nameLocalStorage,
+      time: tempoUtilizado,
+      options,
+      total: calculateTotal(options),
+    };
+
+    console.log('body', body);
+
+    try {
+      await addDoc(collection(firestore, 'scores-2025'), body);
       setShowSuccess(true);
       handleReset();
       await delay(1600);
       setShowSuccess(false);
-    } else {
-      errorNotification();
-      console.log('Preencha todos os campos obrigatórios');
+    } catch (error) {
+      console.error('Erro ao salvar:', error);
+      api.open({
+        message: 'Erro ao salvar dados',
+        description: 'Tente novamente em alguns instantes',
+        type: 'error',
+      });
+    } finally {
+      // Sempre executar, independente de sucesso ou erro
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -313,7 +347,7 @@ function App() {
       <Navigation />
       {contextHolder}
       <div className="mt-5 bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
-        <h2 className="text-xl font-semibold mb-2">CONCURSOS 2024</h2>
+        <h2 className="text-xl font-semibold mb-2">CONCURSOS 2025</h2>
         <p>APaC - Região 09</p>
       </div>
       <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
@@ -353,7 +387,7 @@ function App() {
           <>
             <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
               <h3 className="text-xl font-semibold mb-2">
-                Tema do Projeto Samuel 2024: <p className="italic">Missão ao Extremo</p>
+                Tema do Projeto Samuel 2025: <p className="italic">A Promessa</p>
               </h3>
             </div>
             {!editTime && (

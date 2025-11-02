@@ -58,7 +58,7 @@ const RankingView: React.FC = () => {
       throw new Error('Incorrect competition name');
     }
 
-    const q = query(collection(firestore, 'scores'), where('competition', '==', value));
+    const q = query(collection(firestore, 'scores-2025'), where('competition', '==', value));
     const querySnapshot = await getDocs(q);
     const scores: any[] = [];
     querySnapshot.forEach((doc) => {
@@ -230,7 +230,7 @@ export default RankingView;
 //       throw new Error('Incorrect competition name');
 //     }
 
-//     const q = query(collection(firestore, 'scores'), where('competition', '==', value));
+//     const q = query(collection(firestore, 'scores-2025'), where('competition', '==', value));
 //     const querySnapshot = await getDocs(q);
 //     const scores: any[] = [];
 //     querySnapshot.forEach((doc) => {

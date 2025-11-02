@@ -32,7 +32,7 @@ function Ranking() {
   };
 
   const fetchData = async () => {
-    const q = query(collection(firestore, 'scores'), where('competition', '==', valueCompetition));
+    const q = query(collection(firestore, 'scores-2025'), where('competition', '==', valueCompetition));
     const querySnapshot = await getDocs(q);
     const dadosFirestore: any[] = [];
     querySnapshot.forEach((doc) => {
@@ -89,7 +89,7 @@ function Ranking() {
 
   const deleteScore = async (scoreId: string) => {
     try {
-      await deleteDoc(doc(firestore, 'scores', scoreId));
+      await deleteDoc(doc(firestore, 'scores-2025', scoreId));
       fetchData(); // Re-fetch data to update the state after deletion
       setShowModal(false);
     } catch (error) {
@@ -99,7 +99,7 @@ function Ranking() {
 
   const editScore = async (scoreId: string, newScore: number) => {
     try {
-      const scoreDoc = doc(firestore, 'scores', scoreId);
+      const scoreDoc = doc(firestore, 'scores-2025', scoreId);
       await updateDoc(scoreDoc, { total: newScore });
       fetchData(); // Re-fetch data to update the state after editing
       setShowModal(false);
