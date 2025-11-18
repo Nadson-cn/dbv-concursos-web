@@ -66,10 +66,10 @@ const Login: React.FC = () => {
                 size="large"
                 options={[
                   { value: '', label: 'Escolha seu nome' },
-                  { value: 'Clóvis', label: 'Clóvis' },
+                  { value: 'Alessandra', label: 'Alessandra' },
                   { value: 'Diego', label: 'Diego' },
                   { value: 'Fábio', label: 'Fábio' },
-                  { value: 'Pr. Areli', label: 'Pr. Areli' },
+                  { value: 'Pr. Hemerson', label: 'Pr. Hemerson' },
                   { value: 'Pr. Matheus', label: 'Pr. Matheus' },
                 ]}
               />
