@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Button, Input, Select, Space, Switch, notification } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone, MehOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-// import logoProjeto from '../../assets/Logo-projeto-samuel-2023.png';
-import logoProjeto from '../../assets/Logo-projeto-samuel-2024.jpg';
+import logoProjeto from '../../assets/Logo-regiao-9.png';
 const Login: React.FC = () => {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
@@ -51,7 +50,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center mt-10">
+    <div className="flex flex-col items-center justify-center mt-10 overflow-hidden">
       {contextHolder}
       <img src={logoProjeto} className="w-[300px]" alt="Logo" />
       <div className="hidden md:flex md:flex-col w-[15%] justify-center items-center">

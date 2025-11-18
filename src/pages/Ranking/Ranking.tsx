@@ -146,7 +146,6 @@ function Ranking() {
           <Table pagination={false} bordered dataSource={selectedClub?.judgeScores} rowKey="name">
             <Column title="Jurado" dataIndex="name" key="name" />
             <Column title="Pontuação" dataIndex="score" key="score" />
-            <Column title="Tempo" dataIndex="time" key="time" />
             {nameLocalStorage === 'Nadson' && (
               <Column
                 title="Ações"

@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Select, Spin, notification, TimePicker } from 'antd';
+import { Select, Spin, notification, TimePicker, Slider } from 'antd';
 import { useEffect, useState } from 'react';
 import { MehOutlined } from '@ant-design/icons';
 import type { RadioChangeEvent } from 'antd';
 import OptionsField from '../../components/OptionsField';
 import Navigation from '../../components/Navigation/navigation';
 import { allClubes } from '../../utils/clubes';
-import OptionsInputField from '../../components/OptionsInputField';
 import { useLocation } from 'react-router-dom';
 import { addDoc, collection } from 'firebase/firestore';
 import { firestore } from '../../configs/firebase';
@@ -28,30 +27,56 @@ const commonOptions = [
   { label: 'Regular', value: 4 },
 ];
 
-const initialOptionsProjetoSamuel = {
-  uniforme: null,
-  tempo: null,
+const conteudoOptions = [
+  { label: 'Abrangeu o tema proposto', value: 20 },
+  { label: 'Tangenciou o tema', value: 10 },
+  { label: 'Não abordou o tema', value: 5 },
+  // { label: 'Conteúdo abrangeu o tema proposto satisfatoriamente', value: 20 },
+  // { label: 'Tangenciou o tema (não falou diretamente do assunto)', value: 10 },
+  // { label: 'Não abordou o tema proposto', value: 5 },
+];
+
+const pontualidadeOptions = [
+  { label: 'Mais de 6 minutos', value: 0 },
+  { label: 'Entre 5 e 6 minutos', value: 10 },
+  { label: 'Entre 3 e 5 minutos', value: 20 },
+  { label: 'Até 3 min', value: 5 },
+];
+
+const participacaoOptions = [
+  { label: 'Desbravadores e 20% da liderança', value: 7 },
+  { label: 'Desbravadores e 100% liderança', value: 4 },
+  { label: '100% liderança', value: 2 },
+];
+
+
+
+const initialOptionsProjetoSamuel: {
+  conteudo: number | null;
+  pontualidade: number | null;
+  criatividade: number | null;
+  aplicacaoBiblica: number | null;
+  apresentacao: number | null;
+} = {
   conteudo: null,
-  usoBiblia: null,
-  citacao: null,
-  aplicacaoBiblia: null,
-  dinamismo: null,
-  gestos: null,
+  pontualidade: null,
   criatividade: null,
-  ilustracoes: null,
+  aplicacaoBiblica: null,
+  apresentacao: null,
 };
 
-const initialOptionsConcursoMusical = {
-  membros: null,
-  organizacao: null,
-  musica: null,
-  grauDificuldade: null,
-  afinacao: null,
+const initialOptionsConcursoMusical: {
+  participacao: number | null;
+  coral: number | null;
+  harmonia: number | null;
+  afinacao: number | null;
+  apresentacao: number | null;
+} = {
+  participacao: null,
+  coral: null,
   harmonia: null,
-  criatividade: null,
-  dinamismo: null,
-  gestos: null,
-  ilustracoes: null,
+  afinacao: null,
+  apresentacao: null,
 };
 
 const COMPETITION_TYPES = {
@@ -64,7 +89,13 @@ const COMPETITION_NAMES = {
   [COMPETITION_TYPES.PROJETO_SAMUEL]: 'PROJETO SAMUEL',
 } as const;
 
-// Função auxiliar também fora do componente
+const calculatePontualidade = (seconds: number): number => {
+  if (seconds >= 180 && seconds <= 300) return 20;
+  if (seconds >= 301 && seconds <= 360) return 10;
+  if (seconds >= 0 && seconds <= 179) return 5;
+  return 0;
+};
+
 const calculateTotal = (options: Record<string, number | null>): number => {
   return Object.entries(options)
     .filter(([key, value]) => key !== 'tempoUtilizado' && value !== null)
@@ -133,10 +164,17 @@ function App() {
 
   const handleSaveTime = () => {
     const fomatted = secondsToTimePickerValue(time);
-    // setSecondsTime(time);
     setTempoUtilizado(formatSeconds(time));
-    setTimeAnt(fomatted); // Atualize o campo de tempo utilizado com o tempo atual do cronômetro
+    setTimeAnt(fomatted);
     setEditTime(true);
+
+    if (valueCompetition === 2) {
+      const pontualidadeScore = calculatePontualidade(time);
+      setOptionsProjetoSamuel((prevOptions) => ({
+        ...prevOptions,
+        pontualidade: pontualidadeScore,
+      }));
+    }
   };
 
   const handleChange = (value: dayjs.Dayjs | null) => {
@@ -195,9 +233,29 @@ function App() {
     }));
   };
 
+  const handleSliderProjetoSamuelChange = (
+    optionName: keyof typeof initialOptionsProjetoSamuel,
+    value: number,
+  ) => {
+    setOptionsProjetoSamuel((prevOptions) => ({
+      ...prevOptions,
+      [optionName]: value,
+    }));
+  };
+
   const handleOptionConcursoMusicalChange = (
     optionName: keyof typeof initialOptionsConcursoMusical,
     { target: { value } }: RadioChangeEvent,
+  ) => {
+    setOptionsConcursoMusical((prevOptions) => ({
+      ...prevOptions,
+      [optionName]: value,
+    }));
+  };
+
+  const handleSliderConcursoMusicalChange = (
+    optionName: keyof typeof initialOptionsConcursoMusical,
+    value: number,
   ) => {
     setOptionsConcursoMusical((prevOptions) => ({
       ...prevOptions,
@@ -227,37 +285,25 @@ function App() {
     if (valueCompetition === 2) {
       options = optionsProjetoSamuel;
       requiredFields = [
-        optionsProjetoSamuel.uniforme,
-        optionsProjetoSamuel.tempo,
         optionsProjetoSamuel.conteudo,
-        optionsProjetoSamuel.usoBiblia,
-        optionsProjetoSamuel.citacao,
-        optionsProjetoSamuel.aplicacaoBiblia,
-        optionsProjetoSamuel.dinamismo,
-        optionsProjetoSamuel.gestos,
+        optionsProjetoSamuel.pontualidade,
         optionsProjetoSamuel.criatividade,
-        optionsProjetoSamuel.ilustracoes,
-        tempoUtilizado,
+        optionsProjetoSamuel.aplicacaoBiblica,
+        optionsProjetoSamuel.apresentacao,
       ];
     } else {
       options = optionsConcursoMusical;
       requiredFields = [
-        optionsConcursoMusical.afinacao,
-        optionsConcursoMusical.criatividade,
-        optionsConcursoMusical.dinamismo,
-        optionsConcursoMusical.gestos,
-        optionsConcursoMusical.grauDificuldade,
+        optionsConcursoMusical.participacao,
+        optionsConcursoMusical.coral,
         optionsConcursoMusical.harmonia,
-        optionsConcursoMusical.ilustracoes,
-        optionsConcursoMusical.membros,
-        optionsConcursoMusical.musica,
-        optionsConcursoMusical.organizacao,
-        tempoUtilizado,
+        optionsConcursoMusical.afinacao,
+        optionsConcursoMusical.apresentacao,
       ];
     }
 
     // Validação dos campos obrigatórios
-    if (!valueClube || !requiredFields.every((field) => field !== null) || tempoUtilizado === '') {
+    if (!valueClube || !requiredFields.every((field) => field !== null)) {
       errorNotification();
       console.log('Preencha todos os campos obrigatórios');
       setLoading(false);
@@ -350,14 +396,6 @@ function App() {
         <h2 className="text-xl font-semibold mb-2">CONCURSOS 2025</h2>
         <p>APaC - Região 09</p>
       </div>
-      <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
-        <p className="text-base font-normal mb-2">
-          <ul>
-            <li>Excelente (10 pontos) | Ótimo (8 pontos)</li>
-            <li>Bom (6 pontos) | Regular (4 pontos)</li>
-          </ul>
-        </p>
-      </div>
 
       <form onSubmit={(e) => onSubmit(e)} className="w-full flex flex-col items-center">
         <OptionsField
@@ -447,78 +485,96 @@ function App() {
               </div>
             )}
             <OptionsField
-              onChange={(value) => handleOptionProjetoSamuelChange('uniforme', value)}
-              options={commonOptions}
-              title="Uniforme Oficial:"
-              value={optionsProjetoSamuel.uniforme}
-              submitted={submitted}
-            />
-
-            <OptionsField
-              onChange={(value) => handleOptionProjetoSamuelChange('tempo', value)}
-              options={commonOptions}
-              title="Tempo:"
-              value={optionsProjetoSamuel.tempo}
-              submitted={submitted}
-            />
-
-            <OptionsField
               onChange={(value) => handleOptionProjetoSamuelChange('conteudo', value)}
-              options={commonOptions}
-              title="Conteudo:"
+              options={conteudoOptions}
+              title="1. CONTEÚDO:"
               value={optionsProjetoSamuel.conteudo}
               submitted={submitted}
             />
 
             <OptionsField
-              onChange={(value) => handleOptionProjetoSamuelChange('usoBiblia', value)}
-              options={commonOptions}
-              title="Uso da Bíblia:"
-              value={optionsProjetoSamuel.usoBiblia}
+              onChange={(value) => handleOptionProjetoSamuelChange('pontualidade', value)}
+              options={pontualidadeOptions}
+              title="2. PONTUALIDADE:"
+              value={optionsProjetoSamuel.pontualidade}
               submitted={submitted}
             />
-            <OptionsField
-              onChange={(value) => handleOptionProjetoSamuelChange('citacao', value)}
-              options={commonOptions}
-              title="Citação Espirito de Profêcia:"
-              value={optionsProjetoSamuel.citacao}
-              submitted={submitted}
-            />
-            <OptionsField
-              onChange={(value) => handleOptionProjetoSamuelChange('aplicacaoBiblia', value)}
-              options={commonOptions}
-              title="Aplicação Bíblica:"
-              value={optionsProjetoSamuel.aplicacaoBiblia}
-              submitted={submitted}
-            />
-            <OptionsField
-              onChange={(value) => handleOptionProjetoSamuelChange('criatividade', value)}
-              options={commonOptions}
-              title="Criatividade:"
-              value={optionsProjetoSamuel.criatividade}
-              submitted={submitted}
-            />
-            <OptionsField
-              onChange={(value) => handleOptionProjetoSamuelChange('dinamismo', value)}
-              options={commonOptions}
-              title="Dinamismo:"
-              value={optionsProjetoSamuel.dinamismo}
-              submitted={submitted}
-            />
-            <OptionsField
-              onChange={(value) => handleOptionProjetoSamuelChange('gestos', value)}
-              options={commonOptions}
-              title="Gestos:"
-              value={optionsProjetoSamuel.gestos}
-              submitted={submitted}
-            />
-            <OptionsField
-              onChange={(value) => handleOptionProjetoSamuelChange('ilustracoes', value)}
-              options={commonOptions}
-              title="Ilustrações:"
-              value={optionsProjetoSamuel.ilustracoes}
-              submitted={submitted}
-            />
+
+            <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
+              <h3 className="text-xl font-semibold mb-2">3. CRIATIVIDADE (0 a 15 pontos):</h3>
+              <p>Uso criativo de recursos audiovisuais
+                e métodos inovadores para apresentação do sermão.</p>
+              <Slider
+                min={0}
+                max={15}
+                step={1}
+                value={optionsProjetoSamuel.criatividade || 0}
+                onChange={(value) => handleSliderProjetoSamuelChange('criatividade', value)}
+                marks={{
+                  0: '0',
+                  3: '3',
+                  6: '6',
+                  9: '9',
+                  12: '12',
+                  15: '15',
+                }}
+                tooltip={{ formatter: (value) => `${value} pontos` }}
+              />
+              {submitted && optionsProjetoSamuel.criatividade === null && (
+                <p className="text-red-500 text-sm mt-2">Campo obrigatório</p>
+              )}
+            </div>
+
+            <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
+              <h3 className="text-xl font-semibold mb-2">4. APLICAÇÃO BÍBLICA (0 a 20 pontos):</h3>
+              <p>Abordagem bíblica do tema, Palavra de Deus como base
+                do conteúdo apresentado e utilização da Bíblia durante o
+                sermão.</p>
+              <Slider
+                min={0}
+                max={20}
+                step={1}
+                value={optionsProjetoSamuel.aplicacaoBiblica || 0}
+                onChange={(value) => handleSliderProjetoSamuelChange('aplicacaoBiblica', value)}
+                marks={{
+                  0: '0',
+                  5: '5',
+                  10: '10',
+                  15: '15',
+                  20: '20',
+                }}
+                tooltip={{ formatter: (value) => `${value} pontos` }}
+              />
+              {submitted && optionsProjetoSamuel.aplicacaoBiblica === null && (
+                <p className="text-red-500 text-sm mt-2">Campo obrigatório</p>
+              )}
+            </div>
+
+            <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
+              <h3 className="text-xl font-semibold mb-2">5. APRESENTAÇÃO (0 a 25 pontos):</h3>
+              <p>Dinamismo, oratória, gesticulação e
+                desenvoltura. Uso de ilustrações e outros meios que
+                tornem a apresentação do tema fluida e cativante.</p>
+              <Slider
+                min={0}
+                max={25}
+                step={1}
+                value={optionsProjetoSamuel.apresentacao || 0}
+                onChange={(value) => handleSliderProjetoSamuelChange('apresentacao', value)}
+                marks={{
+                  0: '0',
+                  5: '5',
+                  10: '10',
+                  15: '15',
+                  20: '20',
+                  25: '25',
+                }}
+                tooltip={{ formatter: (value) => `${value} pontos` }}
+              />
+              {submitted && optionsProjetoSamuel.apresentacao === null && (
+                <p className="text-red-500 text-sm mt-2">Campo obrigatório</p>
+              )}
+            </div>
             {editTime && (
               <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
                 <h3 className="text-xl font-semibold mb-2">Tempo utilizado - mm:ss</h3>
@@ -626,142 +682,109 @@ function App() {
               )}
               {loading
                 ? 'Salvando...'
-                : `Classificar ${clubeOptions.find((option) => option.value === valueClube)?.label}`}
+                : `Enviar pontuação de ${clubeOptions.find((option) => option.value === valueClube)?.label}`}
             </button>
           </>
         ) : (
           <>
-            {!editTime && (
-              <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
-                <div className="flex flex-col gap-4 text-xl font-bold mb-2">
-                  <p>
-                    Cronômetro: {Math.floor(time / 60)}:{('0' + (time % 60)).slice(-2)} Minutos
-                  </p>
-                  {/* CRONOMETRO */}
-                  <div className="flex">
-                    {!isActive ? (
-                      <button
-                        type="button"
-                        className="bg-blue-500 hover:bg-blue-600 p-2 rounded text-white"
-                        onClick={handleStart}
-                      >
-                        Iniciar
-                      </button>
-                    ) : isPaused ? (
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          className="bg-yellow-500 hover:bg-yellow-600 p-2 rounded text-white mx-2"
-                          onClick={handleResume}
-                        >
-                          Retomar
-                        </button>
-                        <button
-                          type="button"
-                          className="bg-red-500 hover:bg-red-600 p-2 rounded text-white"
-                          onClick={handleStop}
-                        >
-                          Resetar
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        <button
-                          type="button"
-                          className="bg-yellow-500 hover:bg-yellow-600 p-2 rounded text-white mx-2"
-                          onClick={handlePause}
-                        >
-                          Pausar
-                        </button>
-                        <button
-                          type="button"
-                          className="bg-red-500 hover:bg-red-600 p-2 rounded text-white"
-                          onClick={handleStop}
-                        >
-                          Resetar
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </div>
-                {/* FIM - CRONOMETRO */}
-              </div>
-            )}
             <OptionsField
-              onChange={(value) => handleOptionConcursoMusicalChange('membros', value)}
-              options={commonOptions}
-              title="Membros:"
-              value={optionsConcursoMusical.membros}
+              onChange={(value) => handleOptionConcursoMusicalChange('participacao', value)}
+              options={participacaoOptions}
+              title="PARTICIPAÇÃO:"
+              value={optionsConcursoMusical.participacao}
               submitted={submitted}
             />
 
-            <OptionsField
-              onChange={(value) => handleOptionConcursoMusicalChange('organizacao', value)}
-              options={commonOptions}
-              title="Organização:"
-              value={optionsConcursoMusical.organizacao}
-              submitted={submitted}
-            />
+            <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
+              <h3 className="text-xl font-semibold mb-2">1. CORAL (0 a 10 pontos):</h3>
+              <Slider
+                min={0}
+                max={10}
+                step={1}
+                value={optionsConcursoMusical.coral || 0}
+                onChange={(value) => handleSliderConcursoMusicalChange('coral', value)}
+                marks={{
+                  0: '0',
+                  2: '2',
+                  4: '4',
+                  6: '6',
+                  8: '8',
+                  10: '10',
+                }}
+                tooltip={{ formatter: (value) => `${value} pontos` }}
+              />
+              {submitted && optionsConcursoMusical.coral === null && (
+                <p className="text-red-500 text-sm mt-2">Campo obrigatório</p>
+              )}
+            </div>
 
-            <OptionsField
-              onChange={(value) => handleOptionConcursoMusicalChange('musica', value)}
-              options={commonOptions}
-              title="Musica:"
-              value={optionsConcursoMusical.musica}
-              submitted={submitted}
-            />
+            <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
+              <h3 className="text-xl font-semibold mb-2">2. HARMONIA (0 a 20 pontos):</h3>
+              <Slider
+                min={0}
+                max={20}
+                step={1}
+                value={optionsConcursoMusical.harmonia || 0}
+                onChange={(value) => handleSliderConcursoMusicalChange('harmonia', value)}
+                marks={{
+                  0: '0',
+                  5: '5',
+                  10: '10',
+                  15: '15',
+                  20: '20',
+                }}
+                tooltip={{ formatter: (value) => `${value} pontos` }}
+              />
+              {submitted && optionsConcursoMusical.harmonia === null && (
+                <p className="text-red-500 text-sm mt-2">Campo obrigatório</p>
+              )}
+            </div>
 
-            <OptionsField
-              onChange={(value) => handleOptionConcursoMusicalChange('grauDificuldade', value)}
-              options={commonOptions}
-              title="Grau de Dificuldade:"
-              value={optionsConcursoMusical.grauDificuldade}
-              submitted={submitted}
-            />
+            <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
+              <h3 className="text-xl font-semibold mb-2">3. AFINAÇÃO (0 a 25 pontos):</h3>
+              <Slider
+                min={0}
+                max={25}
+                step={1}
+                value={optionsConcursoMusical.afinacao || 0}
+                onChange={(value) => handleSliderConcursoMusicalChange('afinacao', value)}
+                marks={{
+                  0: '0',
+                  5: '5',
+                  10: '10',
+                  15: '15',
+                  20: '20',
+                  25: '25',
+                }}
+                tooltip={{ formatter: (value) => `${value} pontos` }}
+              />
+              {submitted && optionsConcursoMusical.afinacao === null && (
+                <p className="text-red-500 text-sm mt-2">Campo obrigatório</p>
+              )}
+            </div>
 
-            <OptionsField
-              onChange={(value) => handleOptionConcursoMusicalChange('afinacao', value)}
-              options={commonOptions}
-              title="Afinação:"
-              value={optionsConcursoMusical.afinacao}
-              submitted={submitted}
-            />
-
-            <OptionsField
-              onChange={(value) => handleOptionConcursoMusicalChange('harmonia', value)}
-              options={commonOptions}
-              title="Harmonia:"
-              value={optionsConcursoMusical.harmonia}
-              submitted={submitted}
-            />
-            <OptionsField
-              onChange={(value) => handleOptionConcursoMusicalChange('criatividade', value)}
-              options={commonOptions}
-              title="Criatividade:"
-              value={optionsConcursoMusical.criatividade}
-              submitted={submitted}
-            />
-            <OptionsField
-              onChange={(value) => handleOptionConcursoMusicalChange('dinamismo', value)}
-              options={commonOptions}
-              title="Dinamismo:"
-              value={optionsConcursoMusical.dinamismo}
-              submitted={submitted}
-            />
-            <OptionsField
-              onChange={(value) => handleOptionConcursoMusicalChange('gestos', value)}
-              options={commonOptions}
-              title="Gestos:"
-              value={optionsConcursoMusical.gestos}
-              submitted={submitted}
-            />
-            <OptionsField
-              onChange={(value) => handleOptionConcursoMusicalChange('ilustracoes', value)}
-              options={commonOptions}
-              title="Ilustrações:"
-              value={optionsConcursoMusical.ilustracoes}
-              submitted={submitted}
-            />
+            <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
+              <h3 className="text-xl font-semibold mb-2">4. APRESENTAÇÃO (0 a 25 pontos):</h3>
+              <Slider
+                min={0}
+                max={25}
+                step={1}
+                value={optionsConcursoMusical.apresentacao || 0}
+                onChange={(value) => handleSliderConcursoMusicalChange('apresentacao', value)}
+                marks={{
+                  0: '0',
+                  5: '5',
+                  10: '10',
+                  15: '15',
+                  20: '20',
+                  25: '25',
+                }}
+                tooltip={{ formatter: (value) => `${value} pontos` }}
+              />
+              {submitted && optionsConcursoMusical.apresentacao === null && (
+                <p className="text-red-500 text-sm mt-2">Campo obrigatório</p>
+              )}
+            </div>
             {editTime && (
               <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
                 <h3 className="text-xl font-semibold mb-2">Tempo utilizado - mm:ss</h3>
@@ -784,65 +807,6 @@ function App() {
                 />
               </div>
             )}
-            <div
-              className={`${editTime ? 'hidden' : 'flex flex-col'} bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2`}
-            >
-              <div className="flex items-center py-5 justify-between">
-                <h3 className="text-xl font-semibold mb-2">Tempo utilizado</h3>
-              </div>
-              <div className="flex-col gap-4 text-xl font-bold mb-2">
-                <p>
-                  Cronômetro: {Math.floor(time / 60)}:{('0' + (time % 60)).slice(-2)} Minutos
-                </p>
-                {/* CRONOMETRO */}
-                <div className="flex">
-                  {!isActive ? (
-                    <button
-                      type="button"
-                      className="bg-blue-500 hover:bg-blue-600 p-2 rounded text-white"
-                      onClick={handleStart}
-                    >
-                      Iniciar
-                    </button>
-                  ) : isPaused ? (
-                    <>
-                      <button
-                        type="button"
-                        className="bg-yellow-500 hover:bg-yellow-600 p-2 rounded text-white mx-2"
-                        onClick={handleResume}
-                      >
-                        Retomar
-                      </button>
-                      <button
-                        type="button"
-                        className="bg-green-500 hover:bg-green-600 p-2 rounded text-white"
-                        onClick={handleSaveTime}
-                      >
-                        Salvar
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        type="button"
-                        className="bg-yellow-500 hover:bg-yellow-600 p-2 rounded text-white mx-2"
-                        onClick={handlePause}
-                      >
-                        Pausar
-                      </button>
-                      <button
-                        type="button"
-                        className="bg-red-500 hover:bg-red-600 p-2 rounded text-white"
-                        onClick={handleStop}
-                      >
-                        Resetar
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-              {/* FIM - CRONOMETRO */}
-            </div>
 
             <button
               className="bg-blue-600 hover:bg-blue-700 p-4 rounded text-xl text-white w-full xl:w-1/2"
@@ -850,7 +814,7 @@ function App() {
             >
               {loading
                 ? 'Salvando...'
-                : `Classificar ${clubeOptions.find((option) => option.value === valueClube)?.label}`}
+                : `Enviar pontuação de ${clubeOptions.find((option) => option.value === valueClube)?.label}`}
             </button>
           </>
         )}
