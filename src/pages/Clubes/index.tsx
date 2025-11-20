@@ -1,11 +1,34 @@
-import React from 'react';
-import { List } from 'antd';
+import React, { useState } from 'react';
+import { List, Select, Radio } from 'antd';
 import { allClubes } from '../../utils/clubes';
 import { Link, useNavigate } from 'react-router-dom';
+import type { RadioChangeEvent } from 'antd';
+
 const data = allClubes.map((clube) => ({ title: clube }));
+
+const clubeOptions = allClubes.map((clube) => ({
+  value: clube,
+  label: clube,
+}));
 
 const Clubes: React.FC = () => {
   const navigate = useNavigate();
+  const [selectedClub, setSelectedClub] = useState<string>('');
+  const [selectedCompetition, setSelectedCompetition] = useState<string>('samuel');
+
+  const handleClubChange = (value: string) => {
+    setSelectedClub(value);
+  };
+
+  const handleCompetitionChange = (e: RadioChangeEvent) => {
+    setSelectedCompetition(e.target.value);
+  };
+
+  const handleViewClubScore = () => {
+    if (selectedClub && selectedCompetition) {
+      navigate(`/result-per-club?clube=${selectedClub}&competicao=${selectedCompetition}`);
+    }
+  };
 
   return (
     <>
@@ -18,20 +41,47 @@ const Clubes: React.FC = () => {
           >
             Voltar
           </button>
-          {/* <button
-            className="bg-blue-600 hover:bg-blue-800 p-4 rounded text-xl text-white w-full xl:w-80"
-            type="button"
-            onClick={() => navigate('/ranking-view?competicao=samuel')}
-          >
-            TOP 3 - Projeto Samuel
-          </button>
-          <button
-            className="bg-blue-600 hover:bg-blue-800 p-4 rounded text-xl text-white w-full xl:w-80"
-            type="button"
-            onClick={() => navigate('/ranking-view?competicao=musical')}
-          >
-            TOP 3 - Concurso Musical
-          </button> */}
+
+          <div className="bg-white p-6 rounded shadow-md w-full xl:w-80">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">Ver Pontuação por Clube</h2>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Selecione o Clube:
+              </label>
+              <Select
+                className="w-full"
+                placeholder="Escolha um clube"
+                value={selectedClub || undefined}
+                onChange={handleClubChange}
+                options={clubeOptions}
+                showSearch
+                filterOption={(input, option) =>
+                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Selecione a Competição:
+              </label>
+              <Radio.Group onChange={handleCompetitionChange} value={selectedCompetition}>
+                <Radio value="samuel" className="block mb-2">Projeto Samuel</Radio>
+                <Radio value="musical" className="block">Concurso Musical</Radio>
+              </Radio.Group>
+            </div>
+
+            <button
+              className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed p-3 rounded text-lg text-white w-full"
+              type="button"
+              onClick={handleViewClubScore}
+              disabled={!selectedClub}
+            >
+              Ver Pontuação do Clube
+            </button>
+          </div>
+
           <button
             className="bg-blue-600 hover:bg-blue-800 p-4 rounded text-xl text-white w-full xl:w-80"
             type="button"
@@ -52,7 +102,6 @@ const Clubes: React.FC = () => {
       <div className="bg-custom-background bg-fixed flex flex-col items-center">
         <div className="w-full h-screen bg-fixed bg-slate-400 flex">
           <div className="w-full m-5 xl:w-1/2 xl:ml-auto xl:mr-auto">
-            <h1>onde fica isso?</h1>
             <List
               className="xl:ml-28 bg-slate-100 rounded"
               itemLayout="horizontal"

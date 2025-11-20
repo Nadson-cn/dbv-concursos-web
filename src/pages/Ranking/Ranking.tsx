@@ -10,7 +10,7 @@ export interface ResultType {
   competition: string;
   club: string;
   total: number;
-  time: string;
+  submittedAt: string;
 }
 export interface JudgeScoreType {
   club: string;
@@ -42,7 +42,7 @@ function Ranking() {
     const clubRanking: { [key: string]: any[] } = {};
 
     dadosFirestore.forEach((score: any) => {
-      const { club, competition, total, name, id, time } = score;
+      const { club, competition, total, name, id, submittedAt } = score;
 
       if (!clubRanking[club]) {
         clubRanking[club] = [];
@@ -62,14 +62,14 @@ function Ranking() {
           club,
           competition,
           total,
-          time,
+          submittedAt,
         });
       }
 
       judgeScore[club].push({
         id,
         name,
-        time,
+        submittedAt,
         score: total, // Aqui assumimos que `total` é a pontuação dada pelo jurado
       });
     });
@@ -131,7 +131,7 @@ function Ranking() {
         key: (index + 1).toString(),
         clube: item.club,
         pontuacao: item.total,
-        time: item.time,
+        submittedAt: item.submittedAt,
       }));
 
   return (
@@ -146,6 +146,48 @@ function Ranking() {
           <Table pagination={false} bordered dataSource={selectedClub?.judgeScores} rowKey="name">
             <Column title="Jurado" dataIndex="name" key="name" />
             <Column title="Pontuação" dataIndex="score" key="score" />
+            <Column
+              title="Enviado em"
+              dataIndex="submittedAt"
+              key="submittedAt"
+              render={(submittedAt) => {
+                if (!submittedAt) return '-';
+                try {
+                  // Se for um Timestamp do Firestore
+                  if (submittedAt.seconds) {
+                    const date = new Date(submittedAt.seconds * 1000);
+                    return date.toLocaleString('pt-BR', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      // year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    });
+                  }
+                  // Se for um objeto Date
+                  if (submittedAt instanceof Date) {
+                    return submittedAt.toLocaleString('pt-BR', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      // year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    });
+                  }
+                  // Se for uma string
+                  return new Date(submittedAt).toLocaleString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    // year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  });
+                } catch (error) {
+                  console.error('Erro ao formatar data:', error);
+                  return '-';
+                }
+              }}
+            />
             {nameLocalStorage === 'Nadson' && (
               <Column
                 title="Ações"

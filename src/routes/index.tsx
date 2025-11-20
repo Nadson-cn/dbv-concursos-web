@@ -6,6 +6,7 @@ import Ranking from '../pages/Ranking/Ranking';
 import ResultsScreen from '../pages/Result';
 import RankingView from '../pages/RankingView';
 import Clubes from '../pages/Clubes';
+import ResultPerClub from '../pages/ResultPerClub';
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -17,6 +18,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="/clubes" element={<Clubes />} />
         <Route path="/ranking-view" element={<RankingView />} />
         <Route path="/result" element={<ResultsScreen />} />
+        <Route path="/result-per-club" element={<ResultPerClub />} />
       </Routes>
     </BrowserRouter>
   );

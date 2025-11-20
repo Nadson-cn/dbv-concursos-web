@@ -338,6 +338,7 @@ function App() {
       time: tempoUtilizado,
       options,
       total: calculateTotal(options),
+      submittedAt: new Date(),
     };
 
     console.log('body', body);
