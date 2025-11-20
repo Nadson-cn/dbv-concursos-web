@@ -17,7 +17,7 @@ const OptionsField: React.FC<OptionsFieldProps> = ({ title, options, value, subm
         }`}
     >
       <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <div className='flex flex-col gap-2 p-4 w-2/3'>
+      <div className='flex flex-col gap-2 p-4 w-full'>
         <Radio.Group
           options={options}
           onChange={onChange}

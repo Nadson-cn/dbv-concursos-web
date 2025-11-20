@@ -49,9 +49,10 @@ const Clubes: React.FC = () => {
         </div>
       </div>
 
-      {/* <div className="bg-custom-background bg-fixed flex flex-col items-center">
+      <div className="bg-custom-background bg-fixed flex flex-col items-center">
         <div className="w-full h-screen bg-fixed bg-slate-400 flex">
           <div className="w-full m-5 xl:w-1/2 xl:ml-auto xl:mr-auto">
+            <h1>onde fica isso?</h1>
             <List
               className="xl:ml-28 bg-slate-100 rounded"
               itemLayout="horizontal"
@@ -73,7 +74,7 @@ const Clubes: React.FC = () => {
             </button>
           </div>
         </div>
-      </div> */}
+      </div>
     </>
   );
 };
