@@ -126,7 +126,7 @@ const ProjetoSamuelForm: React.FC<ProjetoSamuelFormProps> = ({
       />
 
       <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
-        <h3 className="text-xl font-semibold mb-2">CRIATIVIDADE: <span className='text-green-800'>{options.criatividade}</span></h3>
+        <h3 className="text-xl font-semibold mb-2">CRIATIVIDADE: <span className='text-black'>{options.criatividade}</span></h3>
         <p>Uso criativo de recursos audiovisuais
           e métodos inovadores para apresentação do sermão.</p>
         <Slider
@@ -151,7 +151,7 @@ const ProjetoSamuelForm: React.FC<ProjetoSamuelFormProps> = ({
       </div>
 
       <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
-        <h3 className="text-xl font-semibold mb-2">APLICAÇÃO BÍBLICA: <span className='text-green-800'>{options.aplicacaoBiblica}</span></h3>
+        <h3 className="text-xl font-semibold mb-2">APLICAÇÃO BÍBLICA: <span className='text-black'>{options.aplicacaoBiblica}</span></h3>
         <p>Abordagem bíblica do tema, Palavra de Deus como base
           do conteúdo apresentado e utilização da Bíblia durante o
           sermão.</p>
@@ -176,7 +176,7 @@ const ProjetoSamuelForm: React.FC<ProjetoSamuelFormProps> = ({
       </div>
 
       <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
-        <h3 className="text-xl font-semibold mb-2">APRESENTAÇÃO: <span className='text-green-800'>{options.apresentacao}</span></h3>
+        <h3 className="text-xl font-semibold mb-2">APRESENTAÇÃO: <span className='text-black'>{options.apresentacao}</span></h3>
         <p>Dinamismo, oratória, gesticulação e
           desenvoltura. Uso de ilustrações e outros meios que
           tornem a apresentação do tema fluida e cativante.</p>

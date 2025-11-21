@@ -50,7 +50,7 @@ const ConcursoMusicalForm: React.FC<ConcursoMusicalFormProps> = ({
       />
 
       <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
-        <h3 className="text-xl font-semibold mb-2">CORAL: <span className='text-green-800'>{options.coral}</span></h3>
+        <h3 className="text-xl font-semibold mb-2">CORAL: <span className='text-black'>{options.coral}</span></h3>
         <p>Uniformidade
           (todos os integrantes devem estar de gala; os
           desbravadores que não possuírem
@@ -80,7 +80,7 @@ const ConcursoMusicalForm: React.FC<ConcursoMusicalFormProps> = ({
       </div>
 
       <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
-        <h3 className="text-xl font-semibold mb-2">HARMONIA: <span className='text-green-800'>{options.harmonia}</span></h3>
+        <h3 className="text-xl font-semibold mb-2">HARMONIA: <span className='text-black'>{options.harmonia}</span></h3>
         <p>Qualidade do conjunto harmonioso de vozes no coral. <b>Não deve haver solos durante a apresentação.</b> Caso haja solos em partes da música o clube <b>perderá 5 pontos neste item</b>.</p>
         <Slider
           min={0}
@@ -111,7 +111,7 @@ const ConcursoMusicalForm: React.FC<ConcursoMusicalFormProps> = ({
       />
 
       <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
-        <h3 className="text-xl font-semibold mb-2">AFINAÇÃO: <span className='text-green-800'>{options.afinacao}</span></h3>
+        <h3 className="text-xl font-semibold mb-2">AFINAÇÃO: <span className='text-black'>{options.afinacao}</span></h3>
         <p>Qualidade técnica das vozes do coral ao longo da apresentação</p>
         <Slider
           min={0}
@@ -135,7 +135,7 @@ const ConcursoMusicalForm: React.FC<ConcursoMusicalFormProps> = ({
       </div>
 
       <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
-        <h3 className="text-xl font-semibold mb-2">APRESENTAÇÃO: <span className='text-green-800'>{options.apresentacao}</span></h3>
+        <h3 className="text-xl font-semibold mb-2">APRESENTAÇÃO: <span className='text-black'>{options.apresentacao}</span></h3>
         <p>Energia, intensidade do canto, gesticulação, dinamismo e
           postura do coral. A criatividade será pontuada neste item
           (o uso de LIBRAS, materiais de apoio, encenação ou outros

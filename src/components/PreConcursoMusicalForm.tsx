@@ -34,13 +34,13 @@ const PreConcursoMusicalForm: React.FC<PreConcursoMusicalFormProps> = ({
       <OptionsField
         onChange={(value) => handleOptionChange('musicaComposicaoPropria', value)}
         options={musicaComposicaoPropriaOptions}
-        title="MÚSICA DE COMPOSIÇÃO PRÓPRIA:"
+        title={`MÚSICA DE COMPOSIÇÃO PRÓPRIA: ${options.musicaComposicaoPropria ?? ''}`}
         value={options.musicaComposicaoPropria}
         submitted={submitted}
       />
 
       <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
-        <h3 className="text-xl font-semibold mb-2">TEMA DA MÚSICA RELACIONADO AO TEMA DO CONCURSO (A PROMESSA): <span className='text-green-800'>{options.temaMusica}</span></h3>
+        <h3 className="text-xl font-semibold mb-2">TEMA DA MÚSICA RELACIONADO AO TEMA DO CONCURSO (A PROMESSA): <span className='text-black'>{options.temaMusica}</span></h3>
         <p>Avalie se o tema da música está relacionado ao tema do concurso (A Promessa)</p>
         <Slider
           min={0}
