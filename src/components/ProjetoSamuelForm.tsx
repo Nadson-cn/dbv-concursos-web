@@ -4,7 +4,7 @@ import OptionsField from './OptionsField';
 
 const conteudoOptions = [
   { label: 'Abrangeu o tema proposto', value: 20 },
-  { label: 'Tangenciou o tema', value: 10 },
+  { label: 'Não falou diretamente o tema', value: 10 },
   { label: 'Não abordou o tema', value: 5 },
 ];
 
@@ -120,7 +120,7 @@ const ProjetoSamuelForm: React.FC<ProjetoSamuelFormProps> = ({
       <OptionsField
         onChange={(value) => handleOptionChange('conteudo', value)}
         options={conteudoOptions}
-        title="CONTEÚDO:"
+        title={`CONTEÚDO: ${options.conteudo ?? ''}`}
         value={options.conteudo}
         submitted={submitted}
       />
@@ -203,7 +203,7 @@ const ProjetoSamuelForm: React.FC<ProjetoSamuelFormProps> = ({
       <OptionsField
         onChange={(value) => handleOptionChange('pontualidade', value)}
         options={pontualidadeOptions}
-        title="PONTUALIDADE:"
+        title={`PONTUALIDADE: ${options.pontualidade ?? ''}`}
         value={options.pontualidade}
         submitted={submitted}
       />

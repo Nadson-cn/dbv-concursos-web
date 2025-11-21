@@ -23,8 +23,6 @@ const clubeOptions = allClubes.map((clube) => ({
   label: clube,
 }));
 
-
-
 const initialOptionsProjetoSamuel: {
   conteudo: number | null;
   pontualidade: number | null;
@@ -41,12 +39,14 @@ const initialOptionsProjetoSamuel: {
 
 const initialOptionsConcursoMusical: {
   participacao: number | null;
+  teveSolo: number | null;
   coral: number | null;
   harmonia: number | null;
   afinacao: number | null;
   apresentacao: number | null;
 } = {
   participacao: null,
+  teveSolo: null,
   coral: null,
   harmonia: null,
   afinacao: null,
@@ -141,41 +141,6 @@ function App() {
     setTime(0); // Optional: Reset time on stop
   };
 
-  const secondsToTimePickerValue = (seconds: number): dayjs.Dayjs => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return dayjs().minute(minutes).second(remainingSeconds); // Cria um objeto dayjs com os minutos e segundos
-  };
-
-  const handleSaveTime = () => {
-    const fomatted = secondsToTimePickerValue(time);
-    setTempoUtilizado(formatSeconds(time));
-    setTimeAnt(fomatted);
-    setEditTime(true);
-
-    if (valueCompetition === 2) {
-      const pontualidadeScore = calculatePontualidade(time);
-      setOptionsProjetoSamuel((prevOptions) => ({
-        ...prevOptions,
-        pontualidade: pontualidadeScore,
-      }));
-    }
-  };
-
-  const handleChange = (value: dayjs.Dayjs | null) => {
-    console.log('value', value);
-    setTimeAnt(value); // Atualiza o estado com o novo valor
-
-    if (value) {
-      const hours = value.hour(); // Obtém a hora
-      const minutes = value.minute(); // Obtém os minutos
-      const totalSeconds = hours * 3600 + minutes * 60; // Converte para segundos
-      setTempoUtilizado(formatSeconds(totalSeconds));
-
-      console.log('Minutos:', minutes);
-      console.log('Total em segundos:', totalSeconds);
-    }
-  };
   // ----------------
   const errorNotification = () => {
     api.open({
@@ -269,11 +234,6 @@ function App() {
     }));
   };
 
-  const formatSeconds = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
-  };
 
   const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 

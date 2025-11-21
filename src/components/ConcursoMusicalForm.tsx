@@ -3,13 +3,19 @@ import type { RadioChangeEvent } from 'antd';
 import OptionsField from './OptionsField';
 
 const participacaoOptions = [
-  { label: 'Desbravadores e 20% da liderança', value: 7 },
+  { label: 'Desbravadores e até 20% da liderança', value: 7 },
   { label: 'Desbravadores e 100% liderança', value: 4 },
-  { label: '100% liderança', value: 2 },
+  { label: 'Apenas liderança', value: 2 },
+];
+
+const teveSoloOptions = [
+  { label: 'Sim', value: 0 },
+  { label: 'Não', value: 5 }
 ];
 
 type ConcursoMusicalOptions = {
   participacao: number | null;
+  teveSolo: number | null;
   coral: number | null;
   harmonia: number | null;
   afinacao: number | null;
@@ -38,7 +44,7 @@ const ConcursoMusicalForm: React.FC<ConcursoMusicalFormProps> = ({
       <OptionsField
         onChange={(value) => handleOptionChange('participacao', value)}
         options={participacaoOptions}
-        title="PARTICIPAÇÃO:"
+        title={`PARTICIPAÇÃO: ${options.participacao ?? ''}`}
         value={options.participacao}
         submitted={submitted}
       />
@@ -78,7 +84,7 @@ const ConcursoMusicalForm: React.FC<ConcursoMusicalFormProps> = ({
         <p>Qualidade do conjunto harmonioso de vozes no coral. <b>Não deve haver solos durante a apresentação.</b> Caso haja solos em partes da música o clube <b>perderá 5 pontos neste item</b>.</p>
         <Slider
           min={0}
-          max={20}
+          max={15}
           step={1}
           value={options.harmonia || 0}
           onChange={(value) => handleSliderChange('harmonia', value)}
@@ -87,14 +93,22 @@ const ConcursoMusicalForm: React.FC<ConcursoMusicalFormProps> = ({
             5: '5',
             10: '10',
             15: '15',
-            20: '20',
+            // 20: '20',
           }}
           tooltip={{ formatter: (value) => `${value} pontos` }}
         />
+
         {submitted && options.harmonia === null && (
           <p className="text-red-500 text-sm mt-2">Campo obrigatório</p>
         )}
       </div>
+      <OptionsField
+        onChange={(value) => handleOptionChange('teveSolo', value)}
+        options={teveSoloOptions}
+        title={`TEVE SOLO: ${options.teveSolo ?? ''}`}
+        value={options.teveSolo}
+        submitted={submitted}
+      />
 
       <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
         <h3 className="text-xl font-semibold mb-2">AFINAÇÃO: <span className='text-green-800'>{options.afinacao}</span></h3>
