@@ -40,33 +40,40 @@ function Ranking() {
     });
     const judgeScore: { [key: string]: any[] } = {};
     const clubRanking: { [key: string]: any[] } = {};
+    const clubNameMap: { [key: string]: string } = {}; // Map lowercase to original name
 
     dadosFirestore.forEach((score: any) => {
       const { club, competition, total, name, id, submittedAt } = score;
+      const clubKey = club.toLowerCase(); // Normalize to lowercase for grouping
 
-      if (!clubRanking[club]) {
-        clubRanking[club] = [];
+      // Store the first occurrence of the club name (original casing)
+      if (!clubNameMap[clubKey]) {
+        clubNameMap[clubKey] = club;
       }
 
-      if (!judgeScore[club]) {
-        judgeScore[club] = [];
+      if (!clubRanking[clubKey]) {
+        clubRanking[clubKey] = [];
       }
 
-      const existingEntry = clubRanking[club].find((entry) => entry.competition === competition);
+      if (!judgeScore[clubKey]) {
+        judgeScore[clubKey] = [];
+      }
+
+      const existingEntry = clubRanking[clubKey].find((entry) => entry.competition === competition);
 
       if (existingEntry) {
         existingEntry.total += total;
       } else {
-        clubRanking[club].push({
+        clubRanking[clubKey].push({
           id,
-          club,
+          club: clubNameMap[clubKey], // Use the original name for display
           competition,
           total,
           submittedAt,
         });
       }
 
-      judgeScore[club].push({
+      judgeScore[clubKey].push({
         id,
         name,
         submittedAt,
@@ -82,9 +89,9 @@ function Ranking() {
       }))
       .sort((a, b) => b.total - a.total);
 
-    const judgeScoresArray = Object.keys(judgeScore).map((club) => ({
-      club,
-      judgeScores: judgeScore[club].map((score) => ({
+    const judgeScoresArray = Object.keys(judgeScore).map((clubKey) => ({
+      club: clubNameMap[clubKey], // Use the original name for display
+      judgeScores: judgeScore[clubKey].map((score) => ({
         ...score,
         score: Math.round(score.score * 10) / 10, // Round to 1 decimal place
       })),

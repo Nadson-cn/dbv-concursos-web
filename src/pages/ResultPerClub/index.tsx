@@ -52,10 +52,10 @@ const ResultPerClub: React.FC = () => {
   };
 
   const getScoreForCompetition = async (clubName: string, competitionValue: string): Promise<number> => {
+    // Fetch all scores for the competition
     const q = query(
       collection(firestore, 'scores-2025'),
-      where('competition', '==', competitionValue),
-      where('club', '==', clubName)
+      where('competition', '==', competitionValue)
     );
     const querySnapshot = await getDocs(q);
     const scores: any[] = [];
@@ -63,8 +63,12 @@ const ResultPerClub: React.FC = () => {
       scores.push({ id: doc.id, ...doc.data() });
     });
 
+    // Filter scores by club name (case-insensitive)
+    const clubNameLower = clubName.toLowerCase();
+    const filteredScores = scores.filter((score) => score.club.toLowerCase() === clubNameLower);
+
     let totalScore = 0;
-    scores.forEach((score: any) => {
+    filteredScores.forEach((score: any) => {
       totalScore += score.total || 0;
     });
 

@@ -66,21 +66,28 @@ const RankingView: React.FC = () => {
     });
 
     const clubRanking: { [key: string]: any[] } = {};
+    const clubNameMap: { [key: string]: string } = {}; // Map lowercase to original name
 
     scores.forEach((score: any) => {
       const { club, competition, total } = score;
+      const clubKey = club.toLowerCase(); // Normalize to lowercase for grouping
 
-      if (!clubRanking[club]) {
-        clubRanking[club] = [];
+      // Store the first occurrence of the club name (original casing)
+      if (!clubNameMap[clubKey]) {
+        clubNameMap[clubKey] = club;
       }
 
-      const existingEntry = clubRanking[club].find((entry) => entry.competition === competition);
+      if (!clubRanking[clubKey]) {
+        clubRanking[clubKey] = [];
+      }
+
+      const existingEntry = clubRanking[clubKey].find((entry) => entry.competition === competition);
 
       if (existingEntry) {
         existingEntry.total += total;
       } else {
-        clubRanking[club].push({
-          club,
+        clubRanking[clubKey].push({
+          club: clubNameMap[clubKey], // Use the original name for display
           competition,
           total,
         });

@@ -33,10 +33,10 @@ const ResultProjetoSamuel: React.FC = () => {
   }, [clube]);
 
   const getProjetoSamuelScore = async (clubName: string): Promise<number> => {
+    // Fetch all scores for Projeto Samuel
     const q = query(
       collection(firestore, 'scores-2025'),
-      where('competition', '==', 'PROJETO SAMUEL'),
-      where('club', '==', clubName)
+      where('competition', '==', 'PROJETO SAMUEL')
     );
     const querySnapshot = await getDocs(q);
     const scores: any[] = [];
@@ -44,8 +44,12 @@ const ResultProjetoSamuel: React.FC = () => {
       scores.push({ id: doc.id, ...doc.data() });
     });
 
+    // Filter scores by club name (case-insensitive)
+    const clubNameLower = clubName.toLowerCase();
+    const filteredScores = scores.filter((score) => score.club.toLowerCase() === clubNameLower);
+
     let totalScore = 0;
-    scores.forEach((scoreDoc: any) => {
+    filteredScores.forEach((scoreDoc: any) => {
       totalScore += scoreDoc.total || 0;
     });
 
