@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
-import { List, Select, Radio } from 'antd';
+import { Select } from 'antd';
 import { allClubes } from '../../utils/clubes';
-import { Link, useNavigate } from 'react-router-dom';
-import type { RadioChangeEvent } from 'antd';
-
-const data = allClubes.map((clube) => ({ title: clube }));
+import { useNavigate } from 'react-router-dom';
 
 const clubeOptions = allClubes.map((clube) => ({
   value: clube,
@@ -14,19 +11,20 @@ const clubeOptions = allClubes.map((clube) => ({
 const Clubes: React.FC = () => {
   const navigate = useNavigate();
   const [selectedClub, setSelectedClub] = useState<string>('');
-  const [selectedCompetition, setSelectedCompetition] = useState<string>('samuel');
 
   const handleClubChange = (value: string) => {
     setSelectedClub(value);
   };
 
-  const handleCompetitionChange = (e: RadioChangeEvent) => {
-    setSelectedCompetition(e.target.value);
+  const handleViewClubScore = () => {
+    if (selectedClub) {
+      navigate(`/result-per-club?clube=${selectedClub}`);
+    }
   };
 
-  const handleViewClubScore = () => {
-    if (selectedClub && selectedCompetition) {
-      navigate(`/result-per-club?clube=${selectedClub}&competicao=${selectedCompetition}`);
+  const handleViewProjetoSamuelScore = () => {
+    if (selectedClub) {
+      navigate(`/result-projeto-samuel?clube=${selectedClub}`);
     }
   };
 
@@ -62,24 +60,24 @@ const Clubes: React.FC = () => {
               />
             </div>
 
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Selecione a Competição:
-              </label>
-              <Radio.Group onChange={handleCompetitionChange} value={selectedCompetition}>
-                <Radio value="samuel" className="block mb-2">Projeto Samuel</Radio>
-                <Radio value="musical" className="block">Concurso Musical</Radio>
-              </Radio.Group>
+            <div className="flex flex-col gap-3">
+              <button
+                className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed p-3 rounded text-lg text-white w-full"
+                type="button"
+                onClick={handleViewClubScore}
+                disabled={!selectedClub}
+              >
+                Ver Ambas Competições
+              </button>
+              <button
+                className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed p-3 rounded text-lg text-white w-full"
+                type="button"
+                onClick={handleViewProjetoSamuelScore}
+                disabled={!selectedClub}
+              >
+                Ver Projeto Samuel
+              </button>
             </div>
-
-            <button
-              className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed p-3 rounded text-lg text-white w-full"
-              type="button"
-              onClick={handleViewClubScore}
-              disabled={!selectedClub}
-            >
-              Ver Pontuação do Clube
-            </button>
           </div>
 
           <button
@@ -96,32 +94,6 @@ const Clubes: React.FC = () => {
           >
             Ranking - Concurso Musical
           </button>
-        </div>
-      </div>
-
-      <div className="bg-custom-background bg-fixed flex flex-col items-center">
-        <div className="w-full h-screen bg-fixed bg-slate-400 flex">
-          <div className="w-full m-5 xl:w-1/2 xl:ml-auto xl:mr-auto">
-            <List
-              className="xl:ml-28 bg-slate-100 rounded"
-              itemLayout="horizontal"
-              dataSource={data.reverse()}
-              renderItem={(item, index) => (
-                <List.Item>
-                  <List.Item.Meta className="ml-5 text-xl font-semibold" title={'#' + index + ' - ' + item.title} />
-                  <Link className="mr-10" to={`/result?clube=${item.title}`}>
-                    Resultado
-                  </Link>
-                </List.Item>
-              )}
-            />
-            <button
-              className="bg-slate-800 hover:bg-slate-700 mr-5 p-4 rounded text-xl text-white w-full xl:hidden mt-5"
-              type="submit"
-            >
-              <Link to="/home">Voltar</Link>
-            </button>
-          </div>
         </div>
       </div>
     </>
