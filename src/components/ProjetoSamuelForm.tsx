@@ -15,12 +15,18 @@ const pontualidadeOptions = [
   { label: 'Até 3 min', value: 5 },
 ];
 
+const espiritoDeProfeciaOptions = [
+  { label: 'Sim', value: 5 },
+  { label: 'Não', value: 0 }
+];
+
 type ProjetoSamuelOptions = {
   conteudo: number | null;
   pontualidade: number | null;
   criatividade: number | null;
   aplicacaoBiblica: number | null;
   apresentacao: number | null;
+  espiritoDeProfecia: number | null;
 };
 
 interface ProjetoSamuelFormProps {
@@ -174,6 +180,14 @@ const ProjetoSamuelForm: React.FC<ProjetoSamuelFormProps> = ({
           <p className="text-red-500 text-sm mt-2">Campo obrigatório</p>
         )}
       </div>
+
+      <OptionsField
+        onChange={(value) => handleOptionChange('espiritoDeProfecia', value)}
+        options={espiritoDeProfeciaOptions}
+        title={`FEZ USO DO ESPÍRITO DE PROFECIA: ${options.espiritoDeProfecia ?? ''}`}
+        value={options.espiritoDeProfecia}
+        submitted={submitted}
+      />
 
       <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
         <h3 className="text-xl font-semibold mb-2">APRESENTAÇÃO: <span className='text-black'>{options.apresentacao}</span></h3>

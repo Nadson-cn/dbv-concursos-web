@@ -76,11 +76,18 @@ function Ranking() {
 
     const finalRanking = Object.values(clubRanking)
       .flat()
+      .map((item) => ({
+        ...item,
+        total: Math.round(item.total * 10) / 10, // Round to 1 decimal place
+      }))
       .sort((a, b) => b.total - a.total);
 
     const judgeScoresArray = Object.keys(judgeScore).map((club) => ({
       club,
-      judgeScores: judgeScore[club],
+      judgeScores: judgeScore[club].map((score) => ({
+        ...score,
+        score: Math.round(score.score * 10) / 10, // Round to 1 decimal place
+      })),
     }));
     setJudgeScores(judgeScoresArray);
     setResult(finalRanking);
@@ -130,7 +137,7 @@ function Ranking() {
       .map((item: ResultType, index: number) => ({
         key: (index + 1).toString(),
         clube: item.club,
-        pontuacao: item.total,
+        pontuacao: item.total.toFixed(1), // Display with 1 decimal place
         submittedAt: item.submittedAt,
       }));
 
@@ -145,7 +152,12 @@ function Ranking() {
         >
           <Table pagination={false} bordered dataSource={selectedClub?.judgeScores} rowKey="name">
             <Column title="Jurado" dataIndex="name" key="name" />
-            <Column title="Pontuação" dataIndex="score" key="score" />
+            <Column
+              title="Pontuação"
+              dataIndex="score"
+              key="score"
+              render={(score) => typeof score === 'number' ? score.toFixed(1) : score}
+            />
             <Column
               title="Enviado em"
               dataIndex="submittedAt"

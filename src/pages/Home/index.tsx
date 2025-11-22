@@ -29,17 +29,21 @@ const initialOptionsProjetoSamuel: {
   criatividade: number | null;
   aplicacaoBiblica: number | null;
   apresentacao: number | null;
+  espiritoDeProfecia: number | null;
 } = {
   conteudo: null,
   pontualidade: null,
   criatividade: null,
   aplicacaoBiblica: null,
   apresentacao: null,
+  espiritoDeProfecia: null,
 };
 
 const initialOptionsConcursoMusical: {
   participacao: number | null;
   teveSolo: number | null;
+  tipoMusica: number | null;
+  tipoInstrumental: number | null;
   coral: number | null;
   harmonia: number | null;
   afinacao: number | null;
@@ -47,6 +51,8 @@ const initialOptionsConcursoMusical: {
 } = {
   participacao: null,
   teveSolo: null,
+  tipoMusica: null,
+  tipoInstrumental: null,
   coral: null,
   harmonia: null,
   afinacao: null,
@@ -73,11 +79,69 @@ const COMPETITION_NAMES = {
   [COMPETITION_TYPES.PRE_CONCURSO_MUSICAL]: 'PRÉ - CONCURSO MUSICAL',
 } as const;
 
+// Fractional weights to reduce tie probability
+const PROJETO_SAMUEL_WEIGHTS = {
+  conteudo: 1.03,
+  criatividade: 1.07,
+  aplicacaoBiblica: 1.05,
+  apresentacao: 1.02,
+  pontualidade: 0.98,
+  espiritoDeProfecia: 1.01,
+} as const;
+
+const CONCURSO_MUSICAL_WEIGHTS = {
+  participacao: 1.04,
+  teveSolo: 1.05,
+  tipoMusica: 1.00,
+  tipoInstrumental: 0.90,
+  coral: 1.06,
+  harmonia: 1.03,
+  afinacao: 1.02,
+  apresentacao: 1.09,
+} as const;
+
 const calculatePontualidade = (seconds: number): number => {
   if (seconds >= 180 && seconds <= 300) return 20;
   if (seconds >= 301 && seconds <= 360) return 10;
   if (seconds >= 0 && seconds <= 179) return 5;
   return 0;
+};
+
+// Calculate total with fractional weights for Projeto Samuel
+const calculateProjetoSamuelTotal = (options: Record<string, number | null>): number => {
+  const total =
+    (options.conteudo || 0) * PROJETO_SAMUEL_WEIGHTS.conteudo +
+    (options.criatividade || 0) * PROJETO_SAMUEL_WEIGHTS.criatividade +
+    (options.aplicacaoBiblica || 0) * PROJETO_SAMUEL_WEIGHTS.aplicacaoBiblica +
+    (options.apresentacao || 0) * PROJETO_SAMUEL_WEIGHTS.apresentacao +
+    (options.pontualidade || 0) * PROJETO_SAMUEL_WEIGHTS.pontualidade +
+    (options.espiritoDeProfecia || 0) * PROJETO_SAMUEL_WEIGHTS.espiritoDeProfecia;
+
+  // Round to 1 decimal place
+  return Math.round(total * 10) / 10;
+};
+
+// Calculate total with fractional weights for Concurso Musical
+const calculateConcursoMusicalTotal = (options: Record<string, number | null>): number => {
+  const total =
+    (options.participacao || 0) * CONCURSO_MUSICAL_WEIGHTS.participacao +
+    (options.teveSolo || 0) * CONCURSO_MUSICAL_WEIGHTS.teveSolo +
+    (options.tipoMusica || 0) * CONCURSO_MUSICAL_WEIGHTS.tipoMusica +
+    (options.tipoInstrumental || 0) * CONCURSO_MUSICAL_WEIGHTS.tipoInstrumental +
+    (options.coral || 0) * CONCURSO_MUSICAL_WEIGHTS.coral +
+    (options.harmonia || 0) * CONCURSO_MUSICAL_WEIGHTS.harmonia +
+    (options.afinacao || 0) * CONCURSO_MUSICAL_WEIGHTS.afinacao +
+    (options.apresentacao || 0) * CONCURSO_MUSICAL_WEIGHTS.apresentacao;
+
+  // Round to 1 decimal place
+  return Math.round(total * 10) / 10;
+};
+
+// Calculate total without weights for Pré-Concurso Musical (keep original calculation)
+const calculatePreConcursoMusicalTotal = (options: Record<string, number | null>): number => {
+  return Object.entries(options)
+    .filter(([key, value]) => key !== 'tempoUtilizado' && value !== null)
+    .reduce((acc, [, value]) => acc + (value || 0), 0);
 };
 
 const calculateTotal = (options: Record<string, number | null>): number => {
@@ -256,6 +320,7 @@ function App() {
         optionsProjetoSamuel.criatividade,
         optionsProjetoSamuel.aplicacaoBiblica,
         optionsProjetoSamuel.apresentacao,
+        optionsProjetoSamuel.espiritoDeProfecia,
       ];
     } else if (valueCompetition === 3) {
       options = optionsPreConcursoMusical;
@@ -267,11 +332,17 @@ function App() {
       options = optionsConcursoMusical;
       requiredFields = [
         optionsConcursoMusical.participacao,
+        optionsConcursoMusical.tipoMusica,
         optionsConcursoMusical.coral,
         optionsConcursoMusical.harmonia,
         optionsConcursoMusical.afinacao,
         optionsConcursoMusical.apresentacao,
       ];
+
+      // Validação condicional: tipoInstrumental é obrigatório apenas se tipoMusica for "Instrumental" (valor 0)
+      if (optionsConcursoMusical.tipoMusica === 0 && optionsConcursoMusical.tipoInstrumental === null) {
+        requiredFields.push(optionsConcursoMusical.tipoInstrumental);
+      }
     }
 
     // Validação dos campos obrigatórios
@@ -291,13 +362,25 @@ function App() {
       return 'PROJETO SAMUEL'; // fallback
     };
 
+    // Calculate total based on competition type with appropriate weights
+    let totalScore: number;
+    if (valueCompetition === COMPETITION_TYPES.PROJETO_SAMUEL) {
+      totalScore = calculateProjetoSamuelTotal(options);
+    } else if (valueCompetition === COMPETITION_TYPES.MUSICAL) {
+      totalScore = calculateConcursoMusicalTotal(options);
+    } else if (valueCompetition === COMPETITION_TYPES.PRE_CONCURSO_MUSICAL) {
+      totalScore = calculatePreConcursoMusicalTotal(options);
+    } else {
+      totalScore = calculateTotal(options); // fallback
+    }
+
     const body = {
       competition: getCompetitionName(valueCompetition),
       club: valueClube,
       name: name || nameLocalStorage,
       time: tempoUtilizado,
       options,
-      total: calculateTotal(options),
+      total: totalScore,
       submittedAt: new Date(),
     };
 

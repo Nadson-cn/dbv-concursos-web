@@ -94,7 +94,7 @@ const ClubesPontuacao: React.FC = () => {
       .map((item, index) => ({
         key: (index + 1).toString(),
         clube: item.club,
-        pontuacao: item.total,
+        pontuacao: Math.round(item.total * 10) / 10, // Round to 1 decimal place
       }))
       .sort((a, b) => b.pontuacao - a.pontuacao);
 
@@ -143,7 +143,7 @@ const ClubesPontuacao: React.FC = () => {
             </div>
             <div className="h-[15rem] w-[24rem] rounded-r-full flex items-center justify-center bg-gray-700">
               <p className="font-extrabold text-8xl -mb-[1px] text-gray-300 text-center animate-fadeIn">
-                {currentClube ? currentClube.pontuacao : ''}
+                {currentClube ? currentClube.pontuacao.toFixed(1) : ''}
               </p>
             </div>
           </div>

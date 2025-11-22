@@ -68,7 +68,8 @@ const ResultPerClub: React.FC = () => {
       totalScore += score.total || 0;
     });
 
-    return totalScore;
+    // Round to 1 decimal place for display
+    return Math.round(totalScore * 10) / 10;
   };
   return (
     <>
@@ -121,7 +122,7 @@ const ResultPerClub: React.FC = () => {
                 Projeto <span className="font-bold text-gray-900">Samuel</span>
               </h2>
               <div className="text-[120px] md:text-[160px] lg:text-[200px] font-black leading-none text-gray-900 tracking-tighter">
-                {scores.projetoSamuel}
+                {scores.projetoSamuel.toFixed(1)}
               </div>
             </div>
 
@@ -131,7 +132,7 @@ const ResultPerClub: React.FC = () => {
                 Concurso <span className="font-bold text-gray-900">Musical</span>
               </h2>
               <div className="text-[120px] md:text-[160px] lg:text-[200px] font-black leading-none text-gray-900 tracking-tighter">
-                {scores.concursoMusical}
+                {scores.concursoMusical.toFixed(1)}
               </div>
             </div>
           </div>

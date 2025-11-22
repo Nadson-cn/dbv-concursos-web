@@ -3,9 +3,9 @@ import type { RadioChangeEvent } from 'antd';
 import OptionsField from './OptionsField';
 
 const participacaoOptions = [
-  { label: 'Desbravadores e até 20% da liderança', value: 7 },
-  { label: 'Desbravadores e 100% liderança', value: 4 },
-  { label: 'Apenas liderança', value: 2 },
+  { label: 'Desbravadores e até 20% da liderança', value: 20 },
+  { label: 'Desbravadores e 100% liderança', value: 5 },
+  { label: 'Apenas liderança', value: -20 },
 ];
 
 const teveSoloOptions = [
@@ -13,9 +13,22 @@ const teveSoloOptions = [
   { label: 'Não', value: 5 }
 ];
 
+const tipoMusicaOptions = [
+  { label: 'Playback', value: 2 },
+  { label: 'Instrumental', value: 0 }
+];
+
+const tipoInstrumentalOptions = [
+  { label: 'Apenas desbravadores', value: 7 },
+  { label: 'Desbravadores e diretoria', value: 4 },
+  { label: 'Somente diretoria', value: 2 }
+];
+
 type ConcursoMusicalOptions = {
   participacao: number | null;
   teveSolo: number | null;
+  tipoMusica: number | null;
+  tipoInstrumental: number | null;
   coral: number | null;
   harmonia: number | null;
   afinacao: number | null;
@@ -81,7 +94,7 @@ const ConcursoMusicalForm: React.FC<ConcursoMusicalFormProps> = ({
 
       <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
         <h3 className="text-xl font-semibold mb-2">HARMONIA: <span className='text-black'>{options.harmonia}</span></h3>
-        <p>Qualidade do conjunto harmonioso de vozes no coral. <b>Não deve haver solos durante a apresentação.</b> Caso haja solos em partes da música o clube <b>perderá 5 pontos neste item</b>.</p>
+        <p>Qualidade do conjunto harmonioso de vozes no coral.</p>
         <Slider
           min={0}
           max={15}
@@ -109,6 +122,24 @@ const ConcursoMusicalForm: React.FC<ConcursoMusicalFormProps> = ({
         value={options.teveSolo}
         submitted={submitted}
       />
+
+      <OptionsField
+        onChange={(value) => handleOptionChange('tipoMusica', value)}
+        options={tipoMusicaOptions}
+        title={`MÚSICA: ${options.tipoMusica ?? ''}`}
+        value={options.tipoMusica}
+        submitted={submitted}
+      />
+
+      {options.tipoMusica === 0 && (
+        <OptionsField
+          onChange={(value) => handleOptionChange('tipoInstrumental', value)}
+          options={tipoInstrumentalOptions}
+          title={`MÚSICA TOCADA POR: ${options.tipoInstrumental ?? ''}`}
+          value={options.tipoInstrumental}
+          submitted={submitted}
+        />
+      )}
 
       <div className="bg-white shadow-md rounded p-4 mb-4 w-full xl:w-1/2">
         <h3 className="text-xl font-semibold mb-2">AFINAÇÃO: <span className='text-black'>{options.afinacao}</span></h3>

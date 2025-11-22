@@ -49,7 +49,8 @@ const ResultProjetoSamuel: React.FC = () => {
       totalScore += scoreDoc.total || 0;
     });
 
-    return totalScore;
+    // Round to 1 decimal place for display
+    return Math.round(totalScore * 10) / 10;
   };
 
   return (
@@ -110,7 +111,7 @@ const ResultProjetoSamuel: React.FC = () => {
                   Projeto <span className="font-bold text-gray-900">Samuel</span>
                 </h2>
                 <div className="text-[150px] md:text-[200px] lg:text-[250px] font-black leading-none text-gray-900 tracking-tighter">
-                  {score}
+                  {score.toFixed(1)}
                 </div>
               </div>
             </div>

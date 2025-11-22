@@ -21,7 +21,7 @@ const TrophyDisplay = ({ place, trophy, data, show }: any) => (
             place === '1º Lugar' ? 'text-yellow-500' : place === '2º Lugar' ? 'text-zinc-600' : 'text-yellow-950'
           } font-rubik text-9xl text-center tracking-widest animate-fadeIn`}
         >
-          {data.total}
+          {data.total.toFixed(1)}
         </h1>
         <h1 className="font-extrabold font-rubik text-5xl animate-fadeIn">{data.club}</h1>
       </div>
@@ -88,6 +88,11 @@ const RankingView: React.FC = () => {
     });
 
     const finalRanking = Object.values(clubRanking).flat();
+
+    // Round totals to 1 decimal place
+    finalRanking.forEach((item) => {
+      item.total = Math.round(item.total * 10) / 10;
+    });
 
     finalRanking.sort((a, b) => b.total - a.total);
 
